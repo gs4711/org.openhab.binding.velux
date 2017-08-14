@@ -98,7 +98,39 @@ sitemap demo label="Main Menu"
 
 For those who are interested in more detailed insight view of the processing of this binding, a deeper look can be achieved by increased loglevel.
 
-Try to add the following lines to  ```logback_debug.xml```
+Try to add the following lines to  `/var/lib/openhab2/etc/org.ops4j.pax.logging.cfg` for common standalone installation:
+
+```
+### 
+### Velux binding logging
+###
+log4j.logger.org.openhab.binding.velux = INFO
+
+### For activation of a specific debugging, choose the following subtopics
+#
+## In-depth-observation of the bridge communication.
+# 
+# log4j.logger.org.openhab.binding.velux.bridge = TRACE
+# 
+## Analysis of the communication message structures.
+# 
+# log4j.logger.org.openhab.binding.velux.bridge.comm = TRACE
+# 
+## Debugging of Velux-OpenHab integration.
+#
+# log4j.logger.org.openhab.binding.velux.handler = TRACE
+#
+## For debugging the initial integration of things and channels, uncomment the following
+#
+# log4j.logger.org.openhab.binding.velux.internal = TRACE
+#
+## For debugging of Velux things, uncomment the following
+#
+# log4j.logger.org.openhab.binding.velux.things = TRACE
+#
+
+```
+For using an IDE like Eclipse please use the specific entries within  `logback_debug.xml` within the usual package:
 
 ```
     <logger name="org.openhab.binding.velux" level="INFO" />
@@ -141,3 +173,24 @@ During startup of normal operations, there should be only a few messages within 
 2017-07-30 15:00:15.711 [INFO ] [nding.velux.bridge.VeluxBridge:175  ] - communicationSetup(): retries = 10 times, initial wait interval = 2000 msecs.
 ```
 
+
+Another way to see what’s going on in the binding, is to switch the loglevel to DEBUG in the Karaf console:
+```
+log:set DEBUG org.openhab.binding.velux
+```
+If you want to see even more, switch to TRACE to also see the detailled bridge request/response data:
+```
+log:set TRACE org.openhab.binding.velux
+```
+To reset the logging back to normal:
+```
+log:set INFO org.openhab.binding.velux
+```
+
+And finally to identify startup problems, try the following:
+```
+stop org.openhab.binding.velux
+log:set TRACE org.openhab.binding.velux
+start org.openhab.binding.velux
+log:tail
+```
