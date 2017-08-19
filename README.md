@@ -95,7 +95,7 @@ Group:Switch:OR(ON, OFF) gV "PushButton"
 
 // Velux Bridge channels
 
-Switch  V_BRIDGE_STATUS     "Velux Bridge Status"               { channel="velux:klf200:home:STATUS" }
+String  V_BRIDGE_STATUS     "Velux Bridge Status"               { channel="velux:klf200:home:STATUS" }
 String  V_BRIDGE_FIRMWARE   "Velux Bridge Firmware version"     { channel="velux:klf200:home:FIRMWARE" }
 String  V_BRIDGE_IPADDRESS  "Velux Bridge IP Address"           { channel="velux:klf200:home:IPADDRESS" }
 String  V_BRIDGE_SUBNETMASK "Velux Bridge IP Subnet Mask"       { channel="velux:klf200:home:SUBNETMASK" }
