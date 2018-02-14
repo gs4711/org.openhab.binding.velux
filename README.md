@@ -12,27 +12,35 @@ The binding can be configured in the file `services/velux.cfg`.
 
 | Property       | Default                | Required | Description                                           |
 |----------------|------------------------|:--------:|-------------------------------------------------------|
-| bridgeURL      | http://velux.bridge:80 |   Yes    | Basic bridge URL for accessing the Velux Bridge.      |
+| bridgeIPAddress| 127.0.0.1              |   Yes    | Name of address for accessing the Velux Bridge.       |
+| bridgeTCPPort  | 80                     |    No    | TCP port for accessing the Velux Bridge.              |
 | bridgePassword | velux123               |   Yes    | Password for authentication against the Velux Bridge. |
 | timeoutMsecs   | 2000                   |    No    | Initial Connection timeout in milliseconds            |
 | retries        | 6                      |    No    | Number of retries during I/O                          |
 
 Advise: if you see a significant number of messages per day like
+
 ```
  "communicate(): socket I/O failed continuously (x times)."
 ```
+
 please increase the parameters retries or/and timeoutMsecs.
 
 Additionaly each scene Thing can process the following parameters:
 
 | Property       | Default                | Required | Description                                           |
 |----------------|------------------------|:--------:|-------------------------------------------------------|
-| sceneName      |                        |    No    | Name of the scene to be handled.                      |
-| TTL            | -1                     |    No    | Interval which describes the lifetime of this thing.  |
+| sceneName      |                        |   Yes    | Name of the scene to be handled.                      |
 
 ## Supported Things
 
-The Velux Bridge in API version One (firmware version 0.1.1.0.41.0) allows to activate a set of predefined actions, so called scenes. Therefore beside the bridge, only one main thing exists, the scene element.
+The Velux Bridge in API version One (firmware version 0.1.1.*) allows to activate a set of predefined actions, so called scenes. Therefore beside the bridge, only one main thing exists, the scene element. Unfortunatelly even the current firmware version 0.1.1.0.44.0 does not include enhacements on this fact.
+
+| Firmware revision | Release date | Description                                                             |
+|:-----------------:|:------------:|-------------------------------------------------------------------------|
+| 0.1.1.0.41.0      | 2016-06-01   | Default factory shipping revision.                                      |
+| 0.1.1.0.42.0      | 2017-07-01   | N/A                                                                     |
+| 0.1.1.0.44.0      | 2017-12-14   | N/A                                                                     |
 
 ## Discovery
 
@@ -43,12 +51,25 @@ Unfortunatelly there is no way to discover the Velux bridge within the local net
 The Velux Bridge requires the URL as a configuration value in order for the binding to know how to access it.
 Additionally, a refresh interval, used to poll the Velux system, can be specified (in seconds).
 
-In the thing file, this looks e.g. like
+In the thing file, i.e. velux.things, this looks at least like
+
 ```
-Bridge velux:klf200:home   [ bridgeURL="http://my-klf200.velux.home" ] {
- Thing scene karlsruhe     [  ]
+Bridge velux:klf200:home   [ bridgeIPAddress="velux-klf200.smile.de" ]
+```
+
+which allows to discover all scenes and instantiate them manually with GUI.
+
+
+A more complex preconfigured thing file this looks e.g. like
+
+```
+Bridge velux:klf200:home    [ bridgeIPAddress="velux-klf200.smile.de", bridgeTCPPort=15001 ] {
+    Thing   scene   windowClosed    [ sceneName="V_DG_Window_Mitte_000" ]
+    Thing   scene   windowUnlocked  [ sceneName="V_DG_Window_Mitte_005" ]
+    Thing   scene   windowOpened    [ sceneName="V_DG_Window_Mitte_100" ]
 }
 ```
+
 
 | Thing type | Description                                                               |
 |------------|---------------------------------------------------------------------------|
@@ -63,25 +84,27 @@ The only currently available channel is the activation of some combined actions,
 
 | Channel Type ID | Item Type | Description                                                     | Thing types  |
 |-----------------|-----------|-----------------------------------------------------------------|--------------|
-| ACTION          | Switch    | Activates a set of predefined product settings                  | scene        |
-| SILENTMODE      | Switch    | Modification of the silent mode of the defined product settings | scene        |
-| STATUS          | String    | Current Bridge State                                            | klf200       |
-| DETECTION       | Switch    | Start of the product detection mode                             | klf200       |
-| FIRMWARE        | String    | Software version of the Bridge                                  | klf200       |
-| IPADDRESS       | String    | IP address of the Bridge                                        | klf200       |
-| SUBNETMASK      | String    | IP subnetmask of the Bridge                                     | klf200       |
-| DEFAULTGW       | String    | IP address of the Default Gateway of the Bridge                 | klf200       |
+| action          | Switch    | Activates a set of predefined product settings                  | scene        |
+| silentMode      | Switch    | Modification of the silent mode of the defined product settings | scene        |
+| status          | String    | Current Bridge State                                            | klf200       |
+| doDetection     | Switch    | Start of the product detection mode                             | klf200       |
+| firmware        | String    | Software version of the Bridge                                  | klf200       |
+| ipAddress       | String    | IP address of the Bridge                                        | klf200       |
+| subnetMask      | String    | IP subnetmask of the Bridge                                     | klf200       |
+| defaultGW       | String    | IP address of the Default Gateway of the Bridge                 | klf200       |
 | DHCP            | Switch    | Flag whether automatic IP configuration is enabled              | klf200       |
 | WLANSSID        | String    | Name of the wireless network                                    | klf200       |
-| WLANPASSWORD    | String    | WLAN Authentication Password                                    | klf200       |
+| WLANPassword    | String    | WLAN Authentication Password                                    | klf200       |
 
 ## Full Example
 
 ### Things
 
 ```
-Bridge velux:klf200:home   [ bridgeURL="http://192.168.0.111:80", bridgePassword="velux123", timeoutMsecs=2000, retries=10 ] {
- Thing scene karlsruhe     [ TTL=-1 ]
+Bridge velux:klf200:home   [ bridgeIPAddress="velux-klf200.smile.de", bridgeTCPPort=15001, bridgePassword="velux123", timeoutMsecs=2000, retries=10 ] {
+ Thing   scene   windowClosed    [ sceneName="V_DG_Window_Mitte_000" ]
+ Thing   scene   windowUnlocked  [ sceneName="V_DG_Window_Mitte_005" ]
+ Thing   scene   windowOpened    [ sceneName="V_DG_Window_Mitte_100" ]
 }
 ```
 
@@ -95,33 +118,21 @@ Group:Switch:OR(ON, OFF) gV "PushButton"
 
 // Velux Bridge channels
 
-String  V_BRIDGE_STATUS     "Velux Bridge Status"               { channel="velux:klf200:home:STATUS" }
-String  V_BRIDGE_FIRMWARE   "Velux Bridge Firmware version"     { channel="velux:klf200:home:FIRMWARE" }
-String  V_BRIDGE_IPADDRESS  "Velux Bridge IP Address"           { channel="velux:klf200:home:IPADDRESS" }
-String  V_BRIDGE_SUBNETMASK "Velux Bridge IP Subnet Mask"       { channel="velux:klf200:home:SUBNETMASK" }
-String  V_BRIDGE_DEFAULTGW  "Velux Bridge Default Gateway"      { channel="velux:klf200:home:DEFAULTGW" }
+String  V_BRIDGE_STATUS     "Velux Bridge Status"               { channel="velux:klf200:home:status" }
+String  V_BRIDGE_FIRMWARE   "Velux Bridge Firmware version"     { channel="velux:klf200:home:firmware" }
+String  V_BRIDGE_IPADDRESS  "Velux Bridge IP Address"           { channel="velux:klf200:home:ipAddress" }
+String  V_BRIDGE_SUBNETMASK "Velux Bridge IP Subnet Mask"       { channel="velux:klf200:home:subnetMask" }
+String  V_BRIDGE_DEFAULTGW  "Velux Bridge Default Gateway"      { channel="velux:klf200:home:defaultGW" }
 String  V_BRIDGE_DHCP       "Velux Bridge DHCP Enabled"         { channel="velux:klf200:home:DHCP" }
 String  V_BRIDGE_WLANSSID   "Velux Bridge SSID"                 { channel="velux:klf200:home:WLANSSID" }
-String  V_BRIDGE_WLANPASSWD "Velux Bridge WLAN Password"        { channel="velux:klf200:home:WLANPASSWORD" }
-Switch  V_BRIDGE_DETECTION  "Velux Bridge Detection mode"  (gV) { channel="velux:klf200:home:DETECTION" }
+String  V_BRIDGE_WLANPASSWD "Velux Bridge WLAN Password"        { channel="velux:klf200:home:WLANPassword" }
+Switch  V_BRIDGE_DO_DETECTION "Velux Bridge Detection mode" (gV) { channel="velux:klf200:home:doDetection" }
 
 // Velux Scene channels
 
-Switch  V_DG_M_W_OPEN   "Velux DG Window open"     (gV)         { channel="velux:scene:home:karlsruhe:ACTION#V_DG_Window_Mitte_100" }
-Switch  V_DG_M_W_90     "Velux DG Window 90% open" (gV)         { channel="velux:scene:home:karlsruhe:ACTION#V_DG_Window_Mitte_090" }
-Switch  V_DG_M_W_80     "Velux DG Window 80% open" (gV)         { channel="velux:scene:home:karlsruhe:ACTION#V_DG_Window_Mitte_080" }
-Switch  V_DG_M_W_70     "Velux DG Window 70% open" (gV)         { channel="velux:scene:home:karlsruhe:ACTION#V_DG_Window_Mitte_070" }
-Switch  V_DG_M_W_60     "Velux DG Window 60% open" (gV)         { channel="velux:scene:home:karlsruhe:ACTION#V_DG_Window_Mitte_060" }
-Switch  V_DG_M_W_50     "Velux DG Window 50% open" (gV)         { channel="velux:scene:home:karlsruhe:ACTION#V_DG_Window_Mitte_050" }
-Switch  V_DG_M_W_40     "Velux DG Window 40% open" (gV)         { channel="velux:scene:home:karlsruhe:ACTION#V_DG_Window_Mitte_040" }
-Switch  V_DG_M_W_30     "Velux DG Window 30% open" (gV)         { channel="velux:scene:home:karlsruhe:ACTION#V_DG_Window_Mitte_030" }
-Switch  V_DG_M_W_20     "Velux DG Window 20% open" (gV)         { channel="velux:scene:home:karlsruhe:ACTION#V_DG_Window_Mitte_020" }
-Switch  V_DG_M_W_10     "Velux DG Window 10% open" (gV)         { channel="velux:scene:home:karlsruhe:ACTION#V_DG_Window_Mitte_010" }
-Switch  V_DG_M_W_CLOSED "Velux DG Window closed"   (gV)         { channel="velux:scene:home:karlsruhe:ACTION#V_DG_Window_Mitte_000" }
-
-Switch  V_DG_M_R_OPEN   "Velux DG Shutter Open"    (gV)         { channel="velux:scene:home:karlsruhe:ACTION#V_DG_Shutter_Mitte_000" }
-Switch  V_DG_M_R_85     "Velux DG Shutter AlmostClosed" (gV)    { channel="velux:scene:home:karlsruhe:ACTION#V_DG_Shutter_Mitte_085" }
-Switch  V_DG_M_R_CLOSED "Velux DG Shutter Closed"  (gV)         { channel="velux:scene:home:karlsruhe:ACTION#V_DG_Shutter_Mitte_100" }
+Switch  V_DG_M_W_OPEN   "Velux DG Window open"     (gV)         { channel="velux:scene:home:windowOpened:action" }
+Switch  V_DG_M_W_UNLOCKED "Velux DG Window 05% open" (gV)       { channel="velux:scene:home:windowUnlocked:action" }
+Switch  V_DG_M_W_CLOSED "Velux DG Window closed"   (gV)         { channel="velux:scene:home:windowClosed:action" }
 ```
 
 ### Sitemap velux.sitemap
@@ -132,20 +143,8 @@ sitemap velux label="Velux Environment"
     Frame label="Velux Shutter and Window" {
 
         Switch  item=V_DG_M_W_OPEN
-        Switch  item=V_DG_M_W_90
-        Switch  item=V_DG_M_W_80
-        Switch  item=V_DG_M_W_70
-        Switch  item=V_DG_M_W_60
-        Switch  item=V_DG_M_W_50
-        Switch  item=V_DG_M_W_40
-        Switch  item=V_DG_M_W_30
-        Switch  item=V_DG_M_W_20
-        Switch  item=V_DG_M_W_10
+        Switch  item=V_DG_M_W_UNLOCKED
         Switch  item=V_DG_M_W_CLOSED
-
-        Switch  item=V_DG_M_R_OPEN
-        Switch  item=V_DG_M_R_85
-        Switch  item=V_DG_M_R_CLOSED
     }
     
     Frame label="Velux Bridge" {
@@ -219,9 +218,11 @@ log4j.logger.org.openhab.binding.velux = INFO
 #
 
 ```
+
 For using an IDE like Eclipse please use the specific entries within  `logback_debug.xml` within the usual package:
 
 ```
+
     <logger name="org.openhab.binding.velux" level="INFO" />
 
     <!-- For activation of a specific debugging, choose the following subtopics  -->
@@ -265,22 +266,39 @@ During startup of normal operations, there should be only some few messages with
 
 
 Another way to see what’s going on in the binding, is to switch the loglevel to DEBUG in the Karaf console:
+
 ```
 log:set DEBUG org.openhab.binding.velux
 ```
+
 If you want to see even more, switch to TRACE to also see the detailled bridge request/response data:
+
 ```
 log:set TRACE org.openhab.binding.velux
 ```
+
 To reset the logging back to normal:
+
 ```
 log:set INFO org.openhab.binding.velux
 ```
 
 And finally to identify startup problems, try the following:
+
 ```
 stop org.openhab.binding.velux
 log:set TRACE org.openhab.binding.velux
 start org.openhab.binding.velux
 log:tail
 ```
+
+## Famous last words
+
+All known <B>Velux<B> devices can be handled by this binding. In fact, there might be some new one which will be reported within the logfiles. Therefore, if you recognize an error message like:
+
+```
+20:59:05.721 [ERROR] [g.velux.things.VeluxProductReference] - PLEASE REPORT THIS TO MAINTAINER: VeluxProductReference(3) has found an unregistered ProductTypeId.
+```
+
+please pass the appropriate log line back to the maintainer to incorporate the new <B>Velux<B> device type.
+
