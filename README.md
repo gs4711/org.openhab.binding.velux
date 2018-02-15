@@ -8,7 +8,7 @@ For details about the feature, see the following website ![Velux](http://www.vel
 
 ## Binding Configuration
 
-The binding can be configured in the file `services/velux.cfg`.
+The binding can be configured by parameters in the definition of Bridge thing as shown in the example below - or within the file `services/velux.cfg`.
 
 | Property       | Default                | Required | Description                                           |
 |----------------|------------------------|:--------:|-------------------------------------------------------|
