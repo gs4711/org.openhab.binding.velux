@@ -34,7 +34,9 @@ Additionaly each scene Thing can process the following parameters:
 
 ## Supported Things
 
-The Velux Bridge in API version One (firmware version 0.1.1.*) allows to activate a set of predefined actions, so called scenes. Therefore beside the bridge, only one main thing exists, the scene element. Unfortunatelly even the current firmware version 0.1.1.0.44.0 does not include enhacements on this fact.
+The Velux Bridge in API version One (firmware version 0.1.1.*) allows to activate a set of predefined actions, so called scenes. Therefore beside the bridge, only one main thing exists, the scene element. Unfortunatelly even the current firmware version 0.1.1.0.44.0 does not include enhancements on this fact. Please refer to https://updates2.velux.com/ for more informations about available firmware upgrades.
+
+String caveat: during the upgrade procedure of the KLF200, you'll probably loose any configured settings.
 
 | Firmware revision | Release date | Description                                                             |
 |:-----------------:|:------------:|-------------------------------------------------------------------------|
@@ -302,3 +304,6 @@ All known <B>Velux<B> devices can be handled by this binding. In fact, there mig
 
 please pass the appropriate log line back to the maintainer to incorporate the new <B>Velux<B> device type.
 
+## Document Revision
+
+2018-06-18 Adapted to OpenHAB-v2.4.0-SNAPSHOT.
