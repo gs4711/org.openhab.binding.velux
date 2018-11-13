@@ -14,7 +14,7 @@ The binding can be configured by parameters in the global configuration file `op
 |----------------|------------------------|:--------:|-------------------------------------------------------|
 | bridgeIPAddress|                        |   Yes    | Hostname or address for accessing the Velux Bridge.   |
 | bridgeProtocol | slip                   |    No    | Underlying communication protocol (http/https/slip).  |
-| bridgeTCPPort  | 80                     |    No    | TCP port for accessing the Velux Bridge.              |
+| bridgeTCPPort  | 51200                  |    No    | TCP port for accessing the Velux Bridge.              |
 | bridgePassword | velux123               |    No    | Password for authentication against the Velux Bridge. |
 | timeoutMsecs   | 2000                   |    No    | Initial Connection timeout in milliseconds            |
 | retries        | 6                      |    No    | Number of retries during I/O                          |
@@ -30,7 +30,7 @@ please increase the parameters retries or/and timeoutMsecs.
 For your convenience you'll see a log entry for the recognized configuration within the log file i.e.
 
 ```
-2018-07-23 20:40:24.746 [INFO ] [.b.velux.internal.VeluxBinding] - veluxConfig[bridgeIPAddress=192.168.42.1,bridgeTCPPort=80,bridgePassword=********,timeoutMsecs=2000,retries=10]
+2018-11-13 20:40:24.746 [INFO ] [.b.velux.internal.VeluxBinding] - veluxConfig[bridgeIPAddress=192.168.42.1,bridgeTCPPort=51200,bridgePassword=********,timeoutMsecs=2000,retries=10]
 ```
 
 ## Discovery
@@ -240,7 +240,7 @@ During startup of normal operations, there should be only some few messages with
 ```
 [INFO ] [.b.velux.internal.VeluxBinding] - Velux refresh interval is 3600000 seconds.
 [INFO ] [.service.AbstractActiveService] - velux Refresh Service has been started
-[INFO ] [.b.velux.internal.VeluxBinding] - veluxConfig[bridgeIPAddress=192.168.41.1,bridgeTCPPort=80,bridgePassword=********,timeoutMsecs=2000,retries=6]
+[INFO ] [.b.velux.internal.VeluxBinding] - veluxConfig[bridgeIPAddress=192.168.41.1,bridgeTCPPort=51200,bridgePassword=********,timeoutMsecs=2000,retries=6]
 ```
 
 ## Supported/Tested Firmware Revisions
