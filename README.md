@@ -3,36 +3,32 @@
 
 This binding integrates the <B>Velux</B> devices with help of a gateway, the <B>Velux Bridge KLF200</B>.
 The Velux Binding interacts via the Velux Bridge with any [io-homecontrol](http://www.io-homecontrol.com/)-based
-devices, i.e. Velux devices, like window openers, shutters and others.
+devices like window openers, shutters and others.
 
-Quoting the <B>Velux</B> documentation for the intension of the provided Bridge and its API:
-```
-With the release of this API VELUX A/S would like to increase the possibility for very advanced users and professionals to control motorized VELUX roof windows, blinds and shutters. We have chosen to release the API with no technical limitation. It is simply open and available. It is free and without registration.
-```
+Based on the VELUX API this binding integrates <B>Velux</B> and other io-homecontrol devices directly into the openHAB, avoiding the necessity of any cloud-based mediation infrastructures. The complete home-automation will work even without any Internet connectivity.
 
-With this background, this binding tries to integrate many <B>Velux</B> directly into the openHAB, avoiding the necessarity of any cloud-based mediation infrastructures: The complete home-automation will work even without an Internet connectivity.
-
-For details about the features, see the following websites [Velux](http://www.velux.com) or [Velux API](http://www.velux.com/api/klf200)
+For details about the features, see the following websites:
+- [Velux](http://www.velux.com)
+- [Velux API](http://www.velux.com/api/klf200)
 
 ## Overview
 
 As the API is widely open, there are several use cases which are supported by the Bridge:
 From the complete configuration of a set of io-homecontrol devices including registration, naming, grouping, crypto key setup and exchange, the definition of intended settings, so called scenes, up to the control of single devices, i.e. ```open window of bathroom up to 45%```.
 
-The following areas are covered by the newest firmware version:
+The following areas are covered:
 
 | Topic                   | Details                                                                                                    |
 |-------------------------|------------------------------------------------------------------------------------------------------------|
-| General bridge commands | SW version(*), Gateway state(*), Learn state, Clock, Reboot, FactoryReset, Network Setup(+)                |
+| General bridge commands | SW version(\*), Gateway state(\*), Learn state, Clock, Reboot, FactoryReset, Network Setup(+)                |
 | Configuration Services  | Node Discovery, Node Removal, Controller Copy, Crypto Key Generation, Crypto Key Exchange, Actuator config | 
-| Information Services    | House Monitoring Service(*), Node information(+), Group information                                        |
+| Information Services    | House Monitoring Service(\*), Node information(+), Group information                                        |
 | Activation Logging      |                                                                                                            |
-| Command Handling        | Command activation(*), Command interruption(*), Status Request(*), Actuator Identification(*), Limitations |
-| Scene Handling          | Scene definition, Scene execution(*), Scene deletion, Scene renaming, Scene Overview(*)                    |
-| Physical IO Handling    | I/O Port setup                                                                                             |
-|-------------------------|------------------------------------------------------------------------------------------------------------|
+| Command Handling        | Command activation(\*), Command interruption(\*), Status Request(\*), Actuator Identification(\*), Limitations |
+| Scene Handling          | Scene definition, Scene execution(\*), Scene deletion, Scene renaming, Scene Overview(\*)                    |
+| Physical I/O Handling   | I/O Port setup                                                                                             |
 
-Note about the current release of this bindung: The details marked with (*) are fully implemented; the (+) refers to a partial functionality support by this binding.
+Items marked with (\*) are fully implemented. Items marked with (+) have only partial support.
 
 ## Binding Configuration
 
@@ -95,7 +91,7 @@ Optionally the subtype is enhanced with parameters like the appropriate name of 
 |--------------|---------------|-----------------------------------------------------------------|------------|-----------|
 | action       | Switch        | Activates a set of predefined product settings                  | scene      | required  |
 | silentMode   | Switch        | Modification of the silent mode of the defined product settings | scene      | required  |
-| status       | String        | Current Bridge State (***)                                      | bridge     | N/A       |
+| status       | String        | Current Bridge State (\*\*\*)                                      | bridge     | N/A       |
 | doDetection  | Switch        | Start of the product detection mode                             | bridge     | N/A       |
 | firmware     | String        | Software version of the Bridge                                  | bridge     | N/A       |
 | ipAddress    | String        | IP address of the Bridge                                        | bridge     | N/A       |
@@ -111,7 +107,7 @@ Optionally the subtype is enhanced with parameters like the appropriate name of 
 | serial       | Rollershutter | IO-Homecontrol'ed device        				 | actuator   | required  |
 | serial       | Switch        | IO-Homecontrol'ed device        				 | actuator   | required  |
 
-Note (***): The existence of this item triggers the continuous realtime status updates of any Velux item like shutters even if they are manually controlled by other controllers.
+Note (\*\*\*): The existence of this item triggers the continuous realtime status updates of any Velux item like shutters even if they are manually controlled by other controllers.
 
 
 ### Subtype Parameters
@@ -240,9 +236,6 @@ Rollershutter V_DG_M_W	"Velux DG Window Bathroom [%d]"	{ velux="thing=actuator;c
 Rollershutter V_DG_M_S	"Velux DG Shutter Bathroom [%d]"{ velux="thing=actuator;channel=serial#01:52:00:21:00:07:00:02"}
 Rollershutter V_DG_W_S	"Velux DG Shutter West [%d]"	{ velux="thing=actuator;channel=serial#01:53:09:40:21:0C:2A:03" }
 Rollershutter V_DG_E_S	"Velux DG Shutter East [%d]"	{ velux="thing=actuator;channel=serial#11:56:32:14:5A:21:1C:04" }
-
-//
-/
 ```
 
 ### Sitemap
@@ -270,8 +263,6 @@ For those who are interested in more detailed insight of the processing of this 
 
 During startup of normal operations, there should be only some few messages within the logfile, like:
 ```
-[INFO ] [.o.core.internal.CoreActivator] - openHAB runtime has been started (v1.8.3).
-...
 [INFO ] [.velux.internal.VeluxActivator] - velux binding has been started.
 [INFO ] [.b.velux.internal.VeluxBinding] - Active items are: [V_DG_M_W, ..., V_DG_M_S].
 [INFO ] [.b.velux.internal.VeluxBinding] - velux refresh interval set to 15000 milliseconds.
@@ -297,7 +288,7 @@ During startup of normal operations, there should be only some few messages with
 
 ## Supported/Tested Firmware Revisions
 
-The Velux Bridge in API version ONE (firmware version 0.1.1.*) allows to activate a set of predefined actions, so called scenes. Therefore beside the bridge, only one main thing exists, the scene element. Unfortunately the next-generation firmware version TWO is not upward compatible so that you'll loose the public web frontend due to this upgrade. On the other hand, the 2.x firmware provide full access to any IO-Home compatible devices not limited to Velux and includes many different features (which are not yet implemented in this binding).
+The Velux Bridge in API version one (firmware version 0.1.1.*) allows activating a set of predefined actions, so called scenes. Therefore beside the bridge, only one main thing exists, the scene element. The next-generation firmware version two is not backward compatible, and does not provide a public web frontend, but version two does provide full access to any IO-Home compatible devices not limited to Velux and includes many different features.
 
 | Firmware revision | Release date | Description                                                             |
 |:-----------------:|:------------:|-------------------------------------------------------------------------|
@@ -306,16 +297,16 @@ The Velux Bridge in API version ONE (firmware version 0.1.1.*) allows to activat
 | 0.1.1.0.44.0      | 2017-12-14   | Public Web Frontend w/ JSON-API.                                        |
 | 2.0.0.71	    | 2018-09-27   | Public SLIP-API w/ private-only WLAN-based Web Frontend w/ JSON-API.    |
 
-Note: There is no way back via downgrade towards firmware version ONE.
+Notes:
+- Velux bridges cannot be returned to version one of the firmware after being upgraded to version two.
+- Firmware updates are currently provided at [Velux download area](https://updates2.velux.com/).
 
-## Document Revision
 
-2018-02-14 Adapted to OpenHAB-v2.3.0-SNAPSHOT (v1 firmware only).
-2018-06-18 Adapted to OpenHAB-v2.4.0-SNAPSHOT (v1 firmware only).
-2018-11-09 Adapted to OpenHAB-1.13.0-SNAPSHOT (v1 and v2 supported, now part of openhab1-addons).
-2019-01-02 Adapted to OpenHAB-1.14.0-SNAPSHOT (v1 and v2 supported).
+## Unknown Velux devices
 
-## Acknowledgements
+All known <B>Velux</B> devices can be handled by this binding. However, there might be some new ones which will be reported within the logfiles.Therefore, error messages like the one below should be reported to the maintainers so that the new Velux device type can be incorporated."
 
-Many thanks to Velux for releasing the API documentation and supporting the new generic flexibility of the KLF200 device.
+```
+[ERROR] [g.velux.things.VeluxProductReference] - PLEASE REPORT THIS TO MAINTAINER: VeluxProductReference(3) has found an unregistered ProductTypeId.
+```
 
