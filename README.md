@@ -34,14 +34,16 @@ Items marked with (\*) are fully implemented. Items marked with (+) have only pa
 
 The binding can be configured by parameters in the global configuration file `openhab.cfg`.
 
-| Property       | Default                | Required | Description                                           |
-|----------------|------------------------|:--------:|-------------------------------------------------------|
-| bridgeIPAddress|                        |   Yes    | Hostname or address for accessing the Velux Bridge.   |
-| bridgeProtocol | slip                   |    No    | Underlying communication protocol (http/https/slip).  |
-| bridgeTCPPort  | 80                     |    No    | TCP port (80 or 51200)for accessing the Velux Bridge. |
-| bridgePassword | velux123               |    No    | Password for authentication against the Velux Bridge. |
-| timeoutMsecs   | 2000                   |    No    | Initial Connection timeout in milliseconds            |
-| retries        | 6                      |    No    | Number of retries during I/O                          |
+| Property       | Default                | Required | Description                                               |
+|----------------|------------------------|:--------:|-----------------------------------------------------------|
+| bridgeIPAddress|                        |   Yes    | Hostname or address for accessing the Velux Bridge.       |
+| bridgeProtocol | slip                   |    No    | Underlying communication protocol (http/https/slip).      |
+| bridgeTCPPort  | 80                     |    No    | TCP port (80 or 51200)for accessing the Velux Bridge.     |
+| bridgePassword | velux123               |    No    | Password for authentication against the Velux Bridge.(**) |
+| timeoutMsecs   | 2000                   |    No    | Initial Connection timeout in milliseconds                |
+| retries        | 6                      |    No    | Number of retries during I/O                              |
+
+(**) Note: This password is the API password that is printed on the back of the unit. Normally it differs from the password of the web frontend.
 
 Advise: if you see a significant number of messages per day like
 
@@ -304,8 +306,8 @@ Notes:
 
 ## How to run it under openHAB2?
 
-Use the Karaf console to install the openHAB1 compatibility layer with `feature:install openhab-runtime-compat1x`.
-Create the basic configuration of the service i.e. with a file `services/velux.cfg`, define the items within i.e. `items/velux.items` and finally generate a UI within i.e. `sitemap/default.sitemap`.
+Use the [Karaf console](https://www.openhab.org/docs/administration/console.html) to install the openHAB1 compatibility layer with help of the command `feature:install openhab-runtime-compat1x`. Activate the binding by placing the jar-file into the [extension directory](https://www.openhab.org/docs/configuration/addons.html#through-manually-provided-add-ons). Then, create the basic configuration of the service i.e. with a file `services/velux.cfg`, define the items within i.e. `items/velux.items` and finally generate a UI within i.e. `sitemap/default.sitemap`.
+
 
 ## Unknown Velux devices
 
