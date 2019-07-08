@@ -94,6 +94,7 @@ Optionally the subtype is enhanced with parameters like the appropriate name of 
 | action       | Switch        | Activates a set of predefined product settings                  | scene      | required  |
 | silentMode   | Switch        | Modification of the silent mode of the defined product settings | scene      | required  |
 | status       | String        | Current Bridge State (\*\*\*)                                      | bridge     | N/A       |
+| timestamp    | Number        | Timestamp of last successful device interaction                 | bridge     | N/A       |
 | doDetection  | Switch        | Start of the product detection mode                             | bridge     | N/A       |
 | firmware     | String        | Software version of the Bridge                                  | bridge     | N/A       |
 | ipAddress    | String        | IP address of the Bridge                                        | bridge     | N/A       |
@@ -166,6 +167,7 @@ Switch  V_DG_CLOSED "Velux DG closed"           (gV)    { velux="thing=scene;cha
 
 String  V_FIRMWARE  "Firmware [%s]"                 { velux="thing=bridge;channel=firmware" }
 String  V_STATUS    "Status [%s]"                   { velux="thing=bridge;channel=status" }
+String  V_TIMESTAMP "Timestamp [%.1f]"              { velux="thing=bridge;channel=timestamp" }
 String  V_CHECK     "Velux Config Check [%s]"           { velux="thing=bridge;channel=check" }
 
 // Velux Shutters
@@ -230,6 +232,7 @@ rule "PushButton of group gV"
 
 String  V_FIRMWARE  "Firmware [%s]"                     { velux="thing=bridge;channel=firmware" }
 String  V_STATUS    "Status [%s]"                       { velux="thing=bridge;channel=status" }
+String  V_TIMESTAMP "Timestamp [%.1f]"                  { velux="thing=bridge;channel=timestamp" }
 String  V_CHECK     "Velux Config Check [%s]"           { velux="thing=bridge;channel=check" }
 
 // Velux Shutters
@@ -254,6 +257,7 @@ sitemap velux label="Velux Environment"
     Frame label="Velux Bridge" {
         Text    item=V_CHECK
         Text    item=V_STATUS
+        Text    item=V_TIMESTAMP
         Text    item=V_FIRMWARE
     }
 }
@@ -309,9 +313,14 @@ Notes:
 Use the [Karaf console](https://www.openhab.org/docs/administration/console.html) to install the openHAB1 compatibility layer with help of the command `feature:install openhab-runtime-compat1x`. Activate the binding by placing the jar-file into the [extension directory](https://www.openhab.org/docs/configuration/addons.html#through-manually-provided-add-ons). Then, create the basic configuration of the service i.e. with a file `services/velux.cfg`, define the items within i.e. `items/velux.items` and finally generate a UI within i.e. `sitemap/default.sitemap`.
 
 
+## Is it possible to run the both communication methods in parallel?
+
+For environments with the firmware version 0.1.* on the gateway, the interaction with the bridge is limited to the HTTP/JSON based communication, of course. On the other hand, after upgrading the gateway firmware to version 2, it is possible to run the binding either using HTTP/JSON if there is a permanent connectivity towards the WLAN interface of the KLF200 or using SLIP towards the LAN interface of the gateway. For example the Raspberry PI can directly be connected via WLAN to the Velux gateway and providing the other services via the LAN interface (but not vice versa).
+
+
 ## Unknown Velux devices
 
-All known <B>Velux</B> devices can be handled by this binding. However, there might be some new ones which will be reported within the logfiles.Therefore, error messages like the one below should be reported to the maintainers so that the new Velux device type can be incorporated."
+All known <B>Velux</B> devices can be handled by this binding. However, there might be some new ones which will be reported within the logfiles. Therefore, error messages like the one below should be reported to the maintainers so that the new Velux device type can be incorporated."
 
 ```
 [ERROR] [g.velux.things.VeluxProductReference] - PLEASE REPORT THIS TO MAINTAINER: VeluxProductReference(3) has found an unregistered ProductTypeId.
