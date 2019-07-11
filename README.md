@@ -38,10 +38,11 @@ The binding can be configured by parameters in the global configuration file `op
 |----------------|------------------------|:--------:|-----------------------------------------------------------|
 | bridgeIPAddress|                        |   Yes    | Hostname or address for accessing the Velux Bridge.       |
 | bridgeProtocol | slip                   |    No    | Underlying communication protocol (http/https/slip).      |
-| bridgeTCPPort  | 80                     |    No    | TCP port (80 or 51200)for accessing the Velux Bridge.     |
+| bridgeTCPPort  | 51200                  |    No    | TCP port (80 or 51200) for accessing the Velux Bridge.    |
 | bridgePassword | velux123               |    No    | Password for authentication against the Velux Bridge.(**) |
-| timeoutMsecs   | 2000                   |    No    | Initial Connection timeout in milliseconds                |
-| retries        | 6                      |    No    | Number of retries during I/O                              |
+| timeoutMsecs   | 1000                   |    No    | Initial Connection timeout in milliseconds                |
+| retries        | 5                      |    No    | Number of retries during I/O                              |
+| refreshMsecs   | 15000                  |    No    | Refresh interval in milliseconds.                          |
 
 (**) Note: This password is the API password that is printed on the back of the unit. Normally it differs from the password of the web frontend.
 
@@ -107,10 +108,13 @@ Optionally the subtype is enhanced with parameters like the appropriate name of 
 | scenes       | String        | List of all defined scenes                                      | bridge     | N/A       |
 | check        | String        | Checks of current item configuratio                             | bridge     | N/A       |
 | shutter      | Rollershutter | Virtual rollershutter as combination of different scenes        | bridge     | required  |
-| serial       | Rollershutter | IO-Homecontrol'ed device        				 | actuator   | required  |
-| serial       | Switch        | IO-Homecontrol'ed device        				 | actuator   | required  |
+| serial       | Rollershutter | IO-Homecontrol'ed device (\*\*\*\*) 				 | actuator   | required  |
 
-Note (\*\*\*): The existence of this item triggers the continuous realtime status updates of any Velux item like shutters even if they are manually controlled by other controllers.
+Notes:
+(\*\*\*) The existence of this item triggers the continuous realtime status updates of any Velux item like shutters even if they are manually controlled by other controllers.
+
+(\*\*\*\*) To enable a complete invertion of all parameter values (i.e. for Velux windows), add a trailing star to the eight-byte serial number. For an example,
+see below at item `Velux DG Window Bathroom`.
 
 
 ### Subtype Parameters
@@ -237,7 +241,7 @@ String  V_CHECK     "Velux Config Check [%s]"           { velux="thing=bridge;ch
 
 // Velux Shutters
 
-Rollershutter V_DG_M_W	"Velux DG Window Bathroom [%d]"	{ velux="thing=actuator;channel=serial#01:52:21:3E:26:0C:1B:01"}
+Rollershutter V_DG_M_W	"Velux DG Window Bathroom [%d]"	{ velux="thing=actuator;channel=serial#01:52:21:3E:26:0C:1B:01*"}
 Rollershutter V_DG_M_S	"Velux DG Shutter Bathroom [%d]"{ velux="thing=actuator;channel=serial#01:52:00:21:00:07:00:02"}
 Rollershutter V_DG_W_S	"Velux DG Shutter West [%d]"	{ velux="thing=actuator;channel=serial#01:53:09:40:21:0C:2A:03" }
 Rollershutter V_DG_E_S	"Velux DG Shutter East [%d]"	{ velux="thing=actuator;channel=serial#11:56:32:14:5A:21:1C:04" }
@@ -316,6 +320,15 @@ Use the [Karaf console](https://www.openhab.org/docs/administration/console.html
 ## Is it possible to run the both communication methods in parallel?
 
 For environments with the firmware version 0.1.* on the gateway, the interaction with the bridge is limited to the HTTP/JSON based communication, of course. On the other hand, after upgrading the gateway firmware to version 2, it is possible to run the binding either using HTTP/JSON if there is a permanent connectivity towards the WLAN interface of the KLF200 or using SLIP towards the LAN interface of the gateway. For example the Raspberry PI can directly be connected via WLAN to the Velux gateway and providing the other services via the LAN interface (but not vice versa).
+
+
+## Known Limitations
+
+The communication based on HTTP/JSON is limited to one connection: If the binding is operational, you won't get access to the Web Frontend in parallel.
+
+The SLIP communication is limited to two connections in parallel, i.e. two different openHAB bindings - or - one openHAB binding and another platform connection.
+
+Both interfacing methods, HTTP/JSON and SLIP, can be run in parallel. Therefore, on the one hand you can use the Web Frontend for manual control and on the other hand a binding can do all automatic jobs.
 
 
 ## Unknown Velux devices
