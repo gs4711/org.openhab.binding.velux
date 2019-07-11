@@ -270,6 +270,18 @@ sitemap velux label="Velux Environment"
 ### Debugging
 
 For those who are interested in more detailed insight of the processing of this binding, a deeper look can be achieved by increased loglevel.
+With Karaf you can use the following command sequence:
+```
+log:set TRACE org.openhab.binding.velux
+log:tail
+```
+
+On the other hand, if you prefer textual configuration, you can append the logging definition with:
+```
+	<logger name="org.openhab.binding.velux" level="TRACE">
+		<appender-ref ref="FILE" />
+	</logger>
+```
 
 During startup of normal operations, there should be only some few messages within the logfile, like:
 ```
