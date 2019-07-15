@@ -169,10 +169,17 @@ Switch  V_DG_CLOSED "Velux DG closed"           (gV)    { velux="thing=scene;cha
 
 // Velux Bridge parameters
 
-String  V_FIRMWARE  "Firmware [%s]"                 { velux="thing=bridge;channel=firmware" }
 String  V_STATUS    "Status [%s]"                   { velux="thing=bridge;channel=status" }
 String  V_TIMESTAMP "Timestamp [%.1f]"              { velux="thing=bridge;channel=timestamp" }
-String  V_CHECK     "Velux Config Check [%s]"           { velux="thing=bridge;channel=check" }
+String  V_CHECK     "Velux Config Check [%s]"       { velux="thing=bridge;channel=check" }
+String  V_FIRMWARE  "Firmware [%s]"                 { velux="thing=bridge;channel=firmware" }
+String	V_CONF_LAN_IP	"KLF LAN IP [%s]"	{ velux="thing=bridge;channel=ipAddress" }
+String	V_CONF_LAN_SUBNET "KLF LAN Subnet [%s]"	{ velux="thing=bridge;channel=subnetMask" }
+String	V_CONF_LAN_GW	"KLF LAN Gateway [%s]"	{ velux="thing=bridge;channel=defaultGW" }
+Switch	V_CONF_LAN_DHCP	"KLF LAN DHCP [%s]"	{ velux="thing=bridge;channel=DHCP" }
+String	V_CONF_WLAN_SSID "KLF WLAN SSID [%s]"	{ velux="thing=bridge;channel=WLANSSID" }
+String	V_CONF_WLAN_PW	"KLF WLAN Password [%s]"{ velux="thing=bridge;channel=WLANPassword" }
+
 
 // Velux Shutters
 
@@ -198,9 +205,16 @@ sitemap velux label="Velux Environment"
         Switch  item=V_DG_M_W
     }
     Frame label="Velux Bridge" {
-        Text    item=V_CHECK
         Text    item=V_STATUS
+        Text    item=V_TIMESTAMP
+        Text    item=V_CHECK
         Text    item=V_FIRMWARE
+        Text    item=V_CONF_LAN_IP
+        Text    item=V_CONF_LAN_SUBNET
+        Text    item=V_CONF_LAN_GW
+        Switch  item=V_CONF_LAN_DHCP
+        Text    item=V_CONF_WLAN_SSID
+        Text    item=V_CONF_WLAN_PW
     }
 }
 ```
@@ -234,10 +248,17 @@ rule "PushButton of group gV"
 ```
 // Velux Bridge parameters
 
-String  V_FIRMWARE  "Firmware [%s]"                     { velux="thing=bridge;channel=firmware" }
-String  V_STATUS    "Status [%s]"                       { velux="thing=bridge;channel=status" }
-String  V_TIMESTAMP "Timestamp [%.1f]"                  { velux="thing=bridge;channel=timestamp" }
-String  V_CHECK     "Velux Config Check [%s]"           { velux="thing=bridge;channel=check" }
+String  V_STATUS    "Status [%s]"                   	{ velux="thing=bridge;channel=status" }
+String  V_TIMESTAMP "Timestamp [%.1f]"              	{ velux="thing=bridge;channel=timestamp" }
+String  V_CHECK     "Velux Config Check [%s]"       	{ velux="thing=bridge;channel=check" }
+String  V_FIRMWARE  "Firmware [%s]"                 	{ velux="thing=bridge;channel=firmware" }
+String	V_CONF_LAN_IP	"KLF LAN IP [%s]"		{ velux="thing=bridge;channel=ipAddress" }
+String	V_CONF_LAN_SUBNET "KLF LAN Subnet [%s]"		{ velux="thing=bridge;channel=subnetMask" }
+String	V_CONF_LAN_GW	"KLF LAN Gateway [%s]"		{ velux="thing=bridge;channel=defaultGW" }
+Switch	V_CONF_LAN_DHCP	"KLF LAN DHCP [%s]"		{ velux="thing=bridge;channel=DHCP" }
+String	V_CONF_WLAN_SSID "KLF WLAN SSID [%s]"		{ velux="thing=bridge;channel=WLANSSID" }
+String	V_CONF_WLAN_PW	"KLF WLAN Password [%s]"	{ velux="thing=bridge;channel=WLANPassword" }
+
 
 // Velux Shutters
 
@@ -259,10 +280,17 @@ sitemap velux label="Velux Environment"
         Switch  item=V_DG_M_W
     }
     Frame label="Velux Bridge" {
-        Text    item=V_CHECK
         Text    item=V_STATUS
         Text    item=V_TIMESTAMP
+        Text    item=V_CHECK
         Text    item=V_FIRMWARE
+        Text    item=V_CONF_LAN_IP
+        Text    item=V_CONF_LAN_SUBNET
+        Text    item=V_CONF_LAN_GW
+        Switch  item=V_CONF_LAN_DHCP
+        Text    item=V_CONF_WLAN_SSID
+        Text    item=V_CONF_WLAN_PW
+    }
     }
 }
 ```
@@ -278,12 +306,14 @@ log:tail
 ```
 
 This, of course, is possible on command line with the commands:
+
 ```
 % openhab-cli console log:set TRACE org.openhab.binding.velux 
 % openhab-cli console log:tail org.openhab.binding.velux
 ```
 
 On the other hand, if you prefer a textual configuration, you can append the logging definition with:
+
 ```
 	<logger name="org.openhab.binding.velux" level="TRACE">
 		<appender-ref ref="FILE" />
@@ -291,6 +321,7 @@ On the other hand, if you prefer a textual configuration, you can append the log
 ```
 
 During startup of normal operations, there should be only some few messages within the logfile, like:
+
 ```
 [INFO ] [.velux.internal.VeluxActivator] - velux binding has been started.
 [INFO ] [.b.velux.internal.VeluxBinding] - Active items are: [V_DG_M_W, ..., V_DG_M_S].
