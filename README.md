@@ -95,6 +95,7 @@ Optionally the subtype is enhanced with parameters like the appropriate name of 
 | action       | Switch        | Activates a set of predefined product settings                  | scene      | required  |
 | silentMode   | Switch        | Modification of the silent mode of the defined product settings | scene      | required  |
 | status       | String        | Current Bridge State (\*\*\*)                                      | bridge     | N/A       |
+| reload       | Switch        | Reload information from bridge into binding                     | bridge     | N/A       |
 | timestamp    | Number        | Timestamp of last successful device interaction                 | bridge     | N/A       |
 | doDetection  | Switch        | Start of the product detection mode                             | bridge     | N/A       |
 | firmware     | String        | Software version of the Bridge                                  | bridge     | N/A       |
@@ -169,6 +170,7 @@ Switch  V_DG_CLOSED "Velux DG closed"           (gV)    { velux="thing=scene;cha
 
 // Velux Bridge parameters
 
+Switch  V_RELOAD    "Reload info from bridge"       { velux="thing=bridge;channel=reload" }
 String  V_STATUS    "Status [%s]"                   { velux="thing=bridge;channel=status" }
 String  V_TIMESTAMP "Timestamp [%.1f]"              { velux="thing=bridge;channel=timestamp" }
 String  V_CHECK     "Velux Config Check [%s]"       { velux="thing=bridge;channel=check" }
@@ -205,6 +207,7 @@ sitemap velux label="Velux Environment"
         Switch  item=V_DG_M_W
     }
     Frame label="Velux Bridge" {
+        Switch  item=V_RELOAD
         Text    item=V_STATUS
         Text    item=V_TIMESTAMP
         Text    item=V_CHECK
@@ -248,6 +251,7 @@ rule "PushButton of group gV"
 ```
 // Velux Bridge parameters
 
+Switch  V_RELOAD    "Reload info from bridge"           { velux="thing=bridge;channel=reload" }
 String  V_STATUS    "Status [%s]"                   	{ velux="thing=bridge;channel=status" }
 String  V_TIMESTAMP "Timestamp [%.1f]"              	{ velux="thing=bridge;channel=timestamp" }
 String  V_CHECK     "Velux Config Check [%s]"       	{ velux="thing=bridge;channel=check" }
@@ -280,6 +284,7 @@ sitemap velux label="Velux Environment"
         Switch  item=V_DG_M_W
     }
     Frame label="Velux Bridge" {
+        Switch  item=V_RELOAD
         Text    item=V_STATUS
         Text    item=V_TIMESTAMP
         Text    item=V_CHECK
