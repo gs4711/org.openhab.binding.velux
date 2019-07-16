@@ -90,26 +90,26 @@ Optionally the subtype is enhanced with parameters like the appropriate name of 
 ### Subtype
 
 
-| Subtype      | Item Type     | Description                                                     | Mastertype | Parameter |
-|--------------|---------------|-----------------------------------------------------------------|------------|-----------|
-| action       | Switch        | Activates a set of predefined product settings                  | scene      | required  |
-| silentMode   | Switch        | Modification of the silent mode of the defined product settings | scene      | required  |
+| Subtype      | Item Type     | Description                                                        | Mastertype | Parameter |
+|--------------|---------------|--------------------------------------------------------------------|------------|-----------|
+| check        | String        | Checks of current item configuratio                                | bridge     | N/A       |
+| defaultGW    | String        | IP address of the Default Gateway of the Bridge                    | bridge     | N/A       |
+| DHCP         | Switch        | Flag whether automatic IP configuration is enabled                 | bridge     | N/A       |
+| doDetection  | Switch        | Start of the product detection mode                                | bridge     | N/A       |
+| firmware     | String        | Software version of the Bridge                                     | bridge     | N/A       |
+| ipAddress    | String        | IP address of the Bridge                                           | bridge     | N/A       |
+| products     | String        | List of all recognized products                                    | bridge     | N/A       |
+| reload       | Switch        | Reload information from bridge into binding                        | bridge     | N/A       |
+| scenes       | String        | List of all defined scenes                                         | bridge     | N/A       |
+| shutter      | Rollershutter | Virtual rollershutter as combination of different scenes           | bridge     | required  |
 | status       | String        | Current Bridge State (\*\*\*)                                      | bridge     | N/A       |
-| reload       | Switch        | Reload information from bridge into binding                     | bridge     | N/A       |
-| timestamp    | Number        | Timestamp of last successful device interaction                 | bridge     | N/A       |
-| doDetection  | Switch        | Start of the product detection mode                             | bridge     | N/A       |
-| firmware     | String        | Software version of the Bridge                                  | bridge     | N/A       |
-| ipAddress    | String        | IP address of the Bridge                                        | bridge     | N/A       |
-| subnetMask   | String        | IP subnetmask of the Bridge                                     | bridge     | N/A       |
-| defaultGW    | String        | IP address of the Default Gateway of the Bridge                 | bridge     | N/A       |
-| DHCP         | Switch        | Flag whether automatic IP configuration is enabled              | bridge     | N/A       |
-| WLANSSID     | String        | Name of the wireless network                                    | bridge     | N/A       |
-| WLANPassword | String        | WLAN Authentication Password                                    | bridge     | N/A       |
-| products     | String        | List of all recognized products                                 | bridge     | N/A       |
-| scenes       | String        | List of all defined scenes                                      | bridge     | N/A       |
-| check        | String        | Checks of current item configuratio                             | bridge     | N/A       |
-| shutter      | Rollershutter | Virtual rollershutter as combination of different scenes        | bridge     | required  |
-| serial       | Rollershutter | IO-Homecontrol'ed device (\*\*\*\*) 				 | actuator   | required  |
+| subnetMask   | String        | IP subnetmask of the Bridge                                        | bridge     | N/A       |
+| timestamp    | Number        | Timestamp (msec since epoch) of last successful bridge interaction | bridge     | N/A       |
+| WLANPassword | String        | WLAN Authentication Password                                       | bridge     | N/A       |
+| WLANSSID     | String        | Name of the wireless network                                       | bridge     | N/A       |
+| action       | Switch        | Activates a set of predefined product settings                     | scene      | required  |
+| silentMode   | Switch        | Modification of the silent mode of the defined product settings    | scene      | required  |
+| serial       | Rollershutter | IO-Homecontrol'ed device (\*\*\*\*) 				    | actuator   | required  |
 
 Notes:
 (\*\*\*) The existence of this item triggers the continuous realtime status updates of any Velux item like shutters even if they are manually controlled by other controllers.
@@ -300,7 +300,65 @@ sitemap velux label="Velux Environment"
 }
 ```
 
-### Debugging
+## More automation samples
+
+At this point some interesting automation rules are included to demonstrate the power of this gateway to the io-homecontrol world.
+
+
+### Closing windows after a period of time
+
+Especially in the colder months, it is advisable to close the window after adequate ventilation. Therefore, automatic closing after one minute is good to save on heating costs.
+However, to allow the case of intentional prolonged opening, an automatic closure is made only with the window fully open.
+
+```
+/*
+ * Start of imports
+ */
+
+import org.openhab.core.library.types.*
+
+/*
+ * Start of rules
+ */
+
+rule "V_WINDOW_changed"
+when
+	Item V_WINDOW changed
+then
+	logInfo("rules.V_WINDOW",	"V_WINDOW_changes() called.")
+	//
+	// Get the sensor value
+	//
+	val Number windowState = V_WINDOW.state as DecimalType
+	logWarn("rules.V_WINDOW", "Window state is "+windowState+".")
+	if (windowState < 80) {
+		if (windowState == 0) {
+			logWarn("rules.V_WINDOW", "V-WINDOW changed to fully open.")
+
+			var int interval = 1
+	
+        		createTimer(now.plusMinutes(interval)) [|
+				logWarn("rules.V_WINDOW:event", "event-V_WINDOW(): setting V-WINDOW to 100.")
+                		sendCommand(V_WINDOW,100)
+				V_WINDOW.postUpdate(100)
+    				logWarn("rules.V_WINDOW:event", "event-V_WINDOW done.")
+        		]
+    		} else {
+			logWarn("rules.V_WINDOW", "V-WINDOW changed to partially open.")
+		}
+    	}
+	//
+	// Check type of item
+	//
+	logDebug("rules.V_WINDOW",	"V_WINDOW_changes finished.")
+end
+
+/*
+ * end-of-rules/V_WINDOW.rules
+ */
+```
+
+## Debugging
 
 For those who are interested in more detailed insight of the processing of this binding, a deeper look can be achieved by increased loglevel.
 
