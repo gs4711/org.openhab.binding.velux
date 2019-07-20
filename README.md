@@ -90,32 +90,34 @@ Optionally the subtype is enhanced with parameters like the appropriate name of 
 ### Subtype
 
 
-| Subtype      | Item Type     | Description                                                        | Mastertype | Parameter |
-|--------------|---------------|--------------------------------------------------------------------|------------|-----------|
-| check        | String        | Checks of current item configuratio                                | bridge     | N/A       |
-| defaultGW    | String        | IP address of the Default Gateway of the Bridge                    | bridge     | N/A       |
-| DHCP         | Switch        | Flag whether automatic IP configuration is enabled                 | bridge     | N/A       |
-| doDetection  | Switch        | Start of the product detection mode                                | bridge     | N/A       |
-| firmware     | String        | Software version of the Bridge                                     | bridge     | N/A       |
-| ipAddress    | String        | IP address of the Bridge                                           | bridge     | N/A       |
-| products     | String        | List of all recognized products                                    | bridge     | N/A       |
-| reload       | Switch        | Reload information from bridge into binding                        | bridge     | N/A       |
-| scenes       | String        | List of all defined scenes                                         | bridge     | N/A       |
-| shutter      | Rollershutter | Virtual rollershutter as combination of different scenes           | bridge     | required  |
+| Subtype      | Item Type     | Description                                                     | Mastertype | Parameter |
+|--------------|---------------|-----------------------------------------------------------------|------------|-----------|
+| action       | Switch        | Activates a set of predefined product settings                  | scene      | required  |
+| silentMode   | Switch        | Modification of the silent mode of the defined product settings | scene      | required  |
 | status       | String        | Current Bridge State (\*\*\*)                                      | bridge     | N/A       |
-| subnetMask   | String        | IP subnetmask of the Bridge                                        | bridge     | N/A       |
-| timestamp    | Number        | Timestamp (msec since epoch) of last successful bridge interaction | bridge     | N/A       |
-| WLANPassword | String        | WLAN Authentication Password                                       | bridge     | N/A       |
-| WLANSSID     | String        | Name of the wireless network                                       | bridge     | N/A       |
-| action       | Switch        | Activates a set of predefined product settings                     | scene      | required  |
-| silentMode   | Switch        | Modification of the silent mode of the defined product settings    | scene      | required  |
-| serial       | Rollershutter | IO-Homecontrol'ed device (\*\*\*\*) 				    | actuator   | required  |
+| reload       | Switch        | Reload information from bridge into binding                     | bridge     | N/A       |
+| timestamp    | Number        | Timestamp of last successful device interaction                 | bridge     | N/A       |
+| doDetection  | Switch        | Start of the product detection mode                             | bridge     | N/A       |
+| firmware     | String        | Software version of the Bridge                                  | bridge     | N/A       |
+| ipAddress    | String        | IP address of the Bridge                                        | bridge     | N/A       |
+| subnetMask   | String        | IP subnetmask of the Bridge                                     | bridge     | N/A       |
+| defaultGW    | String        | IP address of the Default Gateway of the Bridge                 | bridge     | N/A       |
+| DHCP         | Switch        | Flag whether automatic IP configuration is enabled              | bridge     | N/A       |
+| WLANSSID     | String        | Name of the wireless network                                    | bridge     | N/A       |
+| WLANPassword | String        | WLAN Authentication Password                                    | bridge     | N/A       |
+| products     | String        | List of all recognized products                                 | bridge     | N/A       |
+| scenes       | String        | List of all defined scenes                                      | bridge     | N/A       |
+| check        | String        | Checks of current item configuratio                             | bridge     | N/A       |
+| shutter      | Rollershutter | Virtual rollershutter as combination of different scenes        | bridge     | required  |
+| serial       | Rollershutter | IO-Homecontrol'ed device (\*\*\*\*) (\*\*\*\*\*)		 | actuator   | required  |
 
 Notes:
 (\*\*\*) The existence of this item triggers the continuous realtime status updates of any Velux item like shutters even if they are manually controlled by other controllers.
 
 (\*\*\*\*) To enable a complete invertion of all parameter values (i.e. for Velux windows), add a trailing star to the eight-byte serial number. For an example,
 see below at item `Velux DG Window Bathroom`.
+
+(\*\*\*\*\*) Somfy devices does not provides a valid serial number to the Velux KLF200 gateway: The bridge reports a registration of the serial number 00:00:00:00:00:00:00:00. Therefore the binding implements a fallback to allow an item specification with a actuator name instead of actuator serial number whenever such an invalid serial number occurs. For an example, see below at item `Velux OG Somfy Shutter`.
 
 
 ### Subtype Parameters
@@ -270,6 +272,8 @@ Rollershutter V_DG_M_W	"Velux DG Window Bathroom [%d]"	{ velux="thing=actuator;c
 Rollershutter V_DG_M_S	"Velux DG Shutter Bathroom [%d]"{ velux="thing=actuator;channel=serial#01:52:00:21:00:07:00:02"}
 Rollershutter V_DG_W_S	"Velux DG Shutter West [%d]"	{ velux="thing=actuator;channel=serial#01:53:09:40:21:0C:2A:03" }
 Rollershutter V_DG_E_S	"Velux DG Shutter East [%d]"	{ velux="thing=actuator;channel=serial#11:56:32:14:5A:21:1C:04" }
+Rollershutter V_OG_W_S	"Velux OG Somfy Shutter [%d]"	{ velux="thing=actuator;channel=serial#Bathroom" }
+
 ```
 
 ### Sitemap
@@ -295,7 +299,6 @@ sitemap velux label="Velux Environment"
         Switch  item=V_CONF_LAN_DHCP
         Text    item=V_CONF_WLAN_SSID
         Text    item=V_CONF_WLAN_PW
-    }
     }
 }
 ```
