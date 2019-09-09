@@ -8,7 +8,6 @@ devices like window openers, shutters and others.
 Based on the VELUX API this binding integrates <B>Velux</B> and other io-homecontrol devices directly into the openHAB, avoiding the necessity of any cloud-based mediation infrastructures. The complete home-automation will work even without any Internet connectivity.
 
 For details about the features, see the following websites:
-
 - [Velux](http://www.velux.com)
 - [Velux API](http://www.velux.com/api/klf200)
 
@@ -33,7 +32,7 @@ Items marked with (\*) are fully implemented. Items marked with (+) have only pa
 
 ## Binding Configuration
 
-The <B>Velux KLF200</B> bridge has to be configured with some parameters, at least with the IP address of the bridge.
+The binding can be configured by parameters in the global configuration file `openhab.cfg`.
 
 | Property       | Default                | Required | Description                                               |
 |----------------|------------------------|:--------:|-----------------------------------------------------------|
@@ -43,8 +42,7 @@ The <B>Velux KLF200</B> bridge has to be configured with some parameters, at lea
 | bridgePassword | velux123               |    No    | Password for authentication against the Velux Bridge.(**) |
 | timeoutMsecs   | 1000                   |    No    | Initial Connection timeout in milliseconds                |
 | retries        | 5                      |    No    | Number of retries during I/O                              |
-| refreshMsecs   | 60000                  |    No    | Refresh interval in milliseconds.                         |
-| bulkRetrieval  | yes                    |    No    | Load all scenes and actuators in one step.                |
+| refreshMsecs   | 15000                  |    No    | Refresh interval in milliseconds.                          |
 
 (**) Note: This password is the API password that is printed on the back of the unit. Normally it differs from the password of the web frontend.
 
@@ -62,24 +60,10 @@ For your convenience you'll see a log entry for the recognized configuration wit
 2018-07-23 20:40:24.746 [INFO ] [.b.velux.internal.VeluxBinding] - veluxConfig[bridgeIPAddress=192.168.42.1,bridgeTCPPort=80,bridgePassword=********,timeoutMsecs=2000,retries=10]
 ```
 
-The <B>Velux</B> Things (beside the mentioned bridge) are <B>Velux Window</B>, <B>Velux Rollershutter</B>, and a generic <B>Velux Actuator</B> and <B>Velux Scene</B>. The 1st three Things have to be configured with an identification by their serial number. 
-
-| Property       | Default                | Required | Description                                               |
-|----------------|------------------------|:--------:|-----------------------------------------------------------|
-| serial         |                        |   Yes    | Serial number of the io-homecontrol device.               |
-| name           |                        |    No    | (Optional) name of the io-homecontrol device.             |
-| inverted       | false                  |    No    | Inverts any device values.                                |
-
-The fourth Thing, the <B>Velux Scene>, has to be configured with an identification by their scenename. 
-
-| Property       | Default                | Required | Description                                               |
-|----------------|------------------------|:--------:|-----------------------------------------------------------|
-| sceneName      |                        |   Yes    | Name of the io-homecontrol configuration.                 |
-
 
 ## Discovery
 
-Unfortunately there is no way to discover the Velux bridge itself within the local network. But after configuring the Velux Bridge, it is possible to discover all scenes and actuators like windows and rollershutters by the binding.
+Unfortunately there is no way to discover the Velux bridge within the local network. Be aware that all Velux scenes have to be added to the local Velux Bridge configuration as described in the Velux setup procedure.
 
 ## Item Configuration
 
@@ -100,9 +84,7 @@ Optionally the subtype is enhanced with parameters like the appropriate name of 
 |------------|---------------------------------------------------------------------------|
 | bridge     | The Velux KLF200 represents a gateway to all Velux devices.               |
 | scene      | Named ordered set of product states which can be activated for execution. |
-| actuator   | Generic IO-home controlled device which can be maintained by parameter settings.  |
-| window     | IO-home controlled device of type window.				 |
-| rollershutter   | IO-home controlled device of type rollershutter.                     |
+| actuator   | IO-home controlled device which can be maintained by parameter settings.  |
 
 
 ### Subtype
@@ -125,9 +107,8 @@ Optionally the subtype is enhanced with parameters like the appropriate name of 
 | WLANPassword | String        | WLAN Authentication Password                                    | bridge     | N/A       |
 | products     | String        | List of all recognized products                                 | bridge     | N/A       |
 | scenes       | String        | List of all defined scenes                                      | bridge     | N/A       |
-| check        | String        | Result of the check of current item configuration               | bridge     | N/A       |
+| check        | String        | Checks of current item configuratio                             | bridge     | N/A       |
 | shutter      | Rollershutter | Virtual rollershutter as combination of different scenes        | bridge     | required  |
-| position     | Rollershutter | Position of the IO-Homecontrol'ed device (\*\*\*\*) (\*\*\*\*\*)| actuator   | required  |
 | serial       | Rollershutter | IO-Homecontrol'ed device (\*\*\*\*) (\*\*\*\*\*)		 | actuator   | required  |
 
 Notes:
@@ -142,13 +123,11 @@ see below at item `Velux DG Window Bathroom`.
 ### Subtype Parameters
 
 In case of the scene-related subtypes, action and silentMode, the spezification of the related scene as parameters is necessary;
-
 ```
 { velux="thing=scene;channel=<Subtype>#<Parameter>" }
 ```
 
 The subtype shutter requires an even pair of parameters, each defining the shutter level and the related scene:
-
 ```
 { velux="thing=brigde;channel=shutter#<Level1>,<Scene1>,<Level2>,<Scene2>" }
 ```
@@ -171,25 +150,25 @@ Group:Switch:OR(ON, OFF)    gV  "PushButton"
 
 // Velux Scenes
 
-Switch  V_W_S_OPEN   "Velux DG Rolladen West open"       (gV)    { velux="thing=scene;channel=action#V_Shutter_West_000" }
-Switch  V_W_S_SUNNY  "Velux DG Rolladen West sunny"      (gV)    { velux="thing=scene;channel=action#V_Shutter_West_090" }
-Switch  V_W_S_CLOSED "Velux DG Rolladen West closed"     (gV)    { velux="thing=scene;channel=action#V_Shutter_West_100" }
+Switch  V_DG_W_S_OPEN   "Velux DG Rolladen West open"       (gV)    { velux="thing=scene;channel=action#V_DG_Shutter_West_000" }
+Switch  V_DG_W_S_SUNNY  "Velux DG Rolladen West sunny"      (gV)    { velux="thing=scene;channel=action#V_DG_Shutter_West_090" }
+Switch  V_DG_W_S_CLOSED "Velux DG Rolladen West closed"     (gV)    { velux="thing=scene;channel=action#V_DG_Shutter_West_100" }
 
-Switch  V_O_S_OPEN   "Velux DG Rolladen Ost open"        (gV)    { velux="thing=scene;channel=action#V_Shutter_Ost_000" }
-Switch  V_O_S_SUNNY  "Velux DG Rolladen Ost sunny"       (gV)    { velux="thing=scene;channel=action#V_Shutter_Ost_090" }
-Switch  V_O_S_CLOSED "Velux DG Rolladen Ost closed"      (gV)    { velux="thing=scene;channel=action#V_Shutter_Ost_100" }
+Switch  V_DG_O_S_OPEN   "Velux DG Rolladen Ost open"        (gV)    { velux="thing=scene;channel=action#V_DG_Shutter_Ost_000" }
+Switch  V_DG_O_S_SUNNY  "Velux DG Rolladen Ost sunny"       (gV)    { velux="thing=scene;channel=action#V_DG_Shutter_Ost_090" }
+Switch  V_DG_O_S_CLOSED "Velux DG Rolladen Ost closed"      (gV)    { velux="thing=scene;channel=action#V_DG_Shutter_Ost_100" }
 
-Switch  V_M_S_OPEN   "Velux DG Rolladen Mitte open"      (gV)    { velux="thing=scene;channel=action#V_Shutter_Mitte_000" }
-Switch  V_M_S_SUNNY  "Velux DG Rolladen Mitte sunny"     (gV)    { velux="thing=scene;channel=action#V_Shutter_Mitte_090" }
-Switch  V_M_S_CLOSED "Velux DG Rolladen Mitte closed"    (gV)    { velux="thing=scene;channel=action#V_Shutter_Mitte_100" }
+Switch  V_DG_M_S_OPEN   "Velux DG Rolladen Mitte open"      (gV)    { velux="thing=scene;channel=action#V_DG_Shutter_Mitte_000" }
+Switch  V_DG_M_S_SUNNY  "Velux DG Rolladen Mitte sunny"     (gV)    { velux="thing=scene;channel=action#V_DG_Shutter_Mitte_090" }
+Switch  V_DG_M_S_CLOSED "Velux DG Rolladen Mitte closed"    (gV)    { velux="thing=scene;channel=action#V_DG_Shutter_Mitte_100" }
 
-Switch  V_M_W_OPEN   "Velux DG Window open"          (gV)    { velux="thing=scene;channel=action#V_Window_Mitte_000" }
-Switch  V_M_W_UNLOCKED "Velux DG Window unlocked"        (gV)    { velux="thing=scene;channel=action#V_Window_Mitte_010" }
-Switch  V_M_W_CLOSED "Velux DG Window closed"        (gV)    { velux="thing=scene;channel=action#V_Window_Mitte_100" }
+Switch  V_DG_M_W_OPEN   "Velux DG Window open"          (gV)    { velux="thing=scene;channel=action#V_DG_Window_Mitte_000" }
+Switch  V_DG_M_W_UNLOCKED "Velux DG Window unlocked"        (gV)    { velux="thing=scene;channel=action#V_DG_Window_Mitte_010" }
+Switch  V_DG_M_W_CLOSED "Velux DG Window closed"        (gV)    { velux="thing=scene;channel=action#V_DG_Window_Mitte_100" }
 
-Switch  V_OPEN   "Velux DG open"             (gV)    { velux="thing=scene;channel=action#V_Shutters_000" }
-Switch  V_SUNNY  "Velux DG sunny"            (gV)    { velux="thing=scene;channel=action#V_Shutters_090" }
-Switch  V_CLOSED "Velux DG closed"           (gV)    { velux="thing=scene;channel=action#V_Shutters_100" }
+Switch  V_DG_OPEN   "Velux DG open"             (gV)    { velux="thing=scene;channel=action#V_DG_Shutters_000" }
+Switch  V_DG_SUNNY  "Velux DG sunny"            (gV)    { velux="thing=scene;channel=action#V_DG_Shutters_090" }
+Switch  V_DG_CLOSED "Velux DG closed"           (gV)    { velux="thing=scene;channel=action#V_DG_Shutters_100" }
 
 // Velux Bridge parameters
 
@@ -208,12 +187,14 @@ String	V_CONF_WLAN_PW	"KLF WLAN Password [%s]"{ velux="thing=bridge;channel=WLAN
 
 // Velux Shutters
 
-Rollershutter V_W_S  "Velux DG Rolladen West [%d]"   { velux="thing=bridge;channel=shutter#0,V_Shutter_West_000,90,V_Shutter_West_090, 100,V_Shutter_West_100"}
-Rollershutter V_O_S  "Velux DG Rolladen Ost [%d]"    { velux="thing=bridge;channel=shutter#0,V_Shutter_Ost_000,90,V_Shutter_Ost_090,10 0,V_Shutter_Ost_100"}
-Rollershutter V_M_S  "Velux DG Rolladen Mitte [%d]"  { velux="thing=bridge;channel=shutter#0,V_Shutter_Mitte_000,90,V_Shutter_Mitte_09
-0,100,V_Shutter_Mitte_100"}
-Rollershutter V_M_W  "Velux DG Window Mitte [%d]"    { velux="thing=bridge;channel=shutter#0,V_Window_Mitte_000,10,V_Window_Mitte_010,
-100,V_Window_Mitte_100"}
+Rollershutter V_DG_W_S  "Velux DG Rolladen West [%d]"   { velux="thing=bridge;channel=shutter#0,V_DG_Shutter_West_000,90,V_DG_Shutter_West_090,
+100,V_DG_Shutter_West_100"}
+Rollershutter V_DG_O_S  "Velux DG Rolladen Ost [%d]"    { velux="thing=bridge;channel=shutter#0,V_DG_Shutter_Ost_000,90,V_DG_Shutter_Ost_090,10
+0,V_DG_Shutter_Ost_100"}
+Rollershutter V_DG_M_S  "Velux DG Rolladen Mitte [%d]"  { velux="thing=bridge;channel=shutter#0,V_DG_Shutter_Mitte_000,90,V_DG_Shutter_Mitte_09
+0,100,V_DG_Shutter_Mitte_100"}
+Rollershutter V_DG_M_W  "Velux DG Window Mitte [%d]"    { velux="thing=bridge;channel=shutter#0,V_DG_Window_Mitte_000,10,V_DG_Window_Mitte_010,
+100,V_DG_Window_Mitte_100"}
 ```
 
 ### Sitemap
@@ -222,10 +203,10 @@ Rollershutter V_M_W  "Velux DG Window Mitte [%d]"    { velux="thing=bridge;chann
 sitemap velux label="Velux Environment"
 {
     Frame label="Velux Shutter and Window" {
-        Switch  item=V_W_S
-        Switch  item=V_O_S
-        Switch  item=V_M_S
-        Switch  item=V_M_W
+        Switch  item=V_DG_W_S
+        Switch  item=V_DG_O_S
+        Switch  item=V_DG_M_S
+        Switch  item=V_DG_M_W
     }
     Frame label="Velux Bridge" {
         Switch  item=V_RELOAD
@@ -263,77 +244,35 @@ rule "PushButton of group gV"
     end
 ```
 
-## Full Example for firmware version Two (text-based configuration)
+## Full Example for firmware version Two
 
 
-### Things
-
-```
-//
-// Definition of Velux bridge velux:klf200:home
-//
-
-Bridge velux:klf200:home    [ bridgeIPAddress="192.168.1.1", bridgeTCPPort=51200 ] {
-
-// Velux scenes
-
-    Thing   scene   windowClosed    [ sceneName="V_Window_Mitte_000" ]
-    Thing   scene   windowUnlocked  [ sceneName="V_Window_Mitte_005" ]
-    Thing   scene   windowOpened    [ sceneName="V_Window_Mitte_100" ]
-
-// Velux IO-homecontrol devices
-
-    Thing   actuator    V_M_W       [ serial="43:12:3E:26:0C:1B:00:10" ]
-    Thing   actuator    V_M_S       [ serial="43:12:14:5A:12:1C:05:5F" ]
-    Thing   actuator    V_W_S       [ serial="43:12:40:5A:0C:2A:05:64" ]
-    Thing   actuator    V_O_S       [ serial="43:12:40:5A:0C:23:0A:6E" ]
-
-}
-
-```
 
 ### Items
 
 ```
-//  Group for simulating push buttons
+// Velux Bridge parameters
 
-Group:Switch:OR(ON, OFF) gV "PushButton"
+Switch  V_RELOAD    "Reload info from bridge"           { velux="thing=bridge;channel=reload" }
+String  V_STATUS    "Status [%s]"                   	{ velux="thing=bridge;channel=status" }
+String  V_TIMESTAMP "Timestamp [%.1f]"              	{ velux="thing=bridge;channel=timestamp" }
+String  V_CHECK     "Velux Config Check [%s]"       	{ velux="thing=bridge;channel=check" }
+String  V_FIRMWARE  "Firmware [%s]"                 	{ velux="thing=bridge;channel=firmware" }
+String	V_CONF_LAN_IP	"KLF LAN IP [%s]"		{ velux="thing=bridge;channel=ipAddress" }
+String	V_CONF_LAN_SUBNET "KLF LAN Subnet [%s]"		{ velux="thing=bridge;channel=subnetMask" }
+String	V_CONF_LAN_GW	"KLF LAN Gateway [%s]"		{ velux="thing=bridge;channel=defaultGW" }
+Switch	V_CONF_LAN_DHCP	"KLF LAN DHCP [%s]"		{ velux="thing=bridge;channel=DHCP" }
+String	V_CONF_WLAN_SSID "KLF WLAN SSID [%s]"		{ velux="thing=bridge;channel=WLANSSID" }
+String	V_CONF_WLAN_PW	"KLF WLAN Password [%s]"	{ velux="thing=bridge;channel=WLANPassword" }
 
-// Velux Bridge channels
 
-String  V_BRIDGE_STATUS     "Velux Bridge Status [%s]"          { channel="velux:klf200:home:status" }
-Switch  V_BRIDGE_RELOAD     "Velux Bridge Reload"         (gV)  { channel="velux:klf200:home:reload" }
-String  V_BRIDGE_TIMESTAMP  "Velux Bridge Timestamp [%d]"       { channel="velux:klf200:home:timestamp" }
+// Velux Shutters
 
-String  V_BRIDGE_FIRMWARE   "Velux Bridge Firmware version [%s]" { channel="velux:klf200:home:firmware" }
-String  V_BRIDGE_IPADDRESS  "Velux Bridge LAN IP Address"       { channel="velux:klf200:home:ipAddress" }
-String  V_BRIDGE_SUBNETMASK "Velux Bridge LAN IP Subnet Mask"   { channel="velux:klf200:home:subnetMask" }
-String  V_BRIDGE_DEFAULTGW  "Velux Bridge LAN Default Gateway"  { channel="velux:klf200:home:defaultGW" }
-String  V_BRIDGE_DHCP       "Velux Bridge LAN DHCP Enabled"     { channel="velux:klf200:home:DHCP" }
-String  V_BRIDGE_WLANSSID   "Velux Bridge WLAN SSID"            { channel="velux:klf200:home:WLANSSID" }
-String  V_BRIDGE_WLANPASSWD "Velux Bridge WLAN Password"        { channel="velux:klf200:home:WLANPassword" }
-
-Switch  V_BRIDGE_DETECTION  "Velux Bridge Detection mode"  (gV) { channel="velux:klf200:home:doDetection" }
-String  V_BRIDGE_CHECK      "Velux Bridge Check"                { channel="velux:klf200:home:check" }
-String  V_BRIDGE_SCENES     "Velux Bridge Scenes"               { channel="velux:klf200:home:scenes" }
-String  V_BRIDGE_PRODUCTS   "Velux Bridge Products"             { channel="velux:klf200:home:products" }
-
-// Velux Scene channels
-
-Switch  V_M_W_OPEN          "Velux Window open"            (gV) { channel="velux:scene:home:windowOpened:action" }
-Switch  V_M_W_UNLOCKED      "Velux Window a little open"   (gV) { channel="velux:scene:home:windowUnlocked:action" }
-Switch  V_M_W_CLOSED        "Velux Window closed"          (gV) { channel="velux:scene:home:windowClosed:action" }
-
-// Velux Bridge channel
-
-Rollershutter RS2           "Velux Rolladen 2 [%d]"              { channel="velux:klf200:home:shutter#0,V_Shutter_Ost_000,100,V_Shutter_Ost_100", channel="knx:device:bridge:control:VeluxFenster" }
-
-// Velux Actuator channels
-
-Rollershutter   V_M_W        "DG Fenster Bad [%d]"              { channel="velux:klf200:home:V_M_W" }
-Rollershutter   V_M_S        "DG Bad  [%d]"                     { channel="velux:klf200:home:V_M_S" }
-Rollershutter   V_W_S        "DG West [%d]"                     { channel="velux:klf200:home:V_W_S" }
-Rollershutter   V_O_S        "DG Ost  [%d]"                     { channel="velux:klf200:home:V_O_S" }
+Rollershutter V_DG_M_W	"Velux DG Window Bathroom [%d]"	{ velux="thing=actuator;channel=serial#01:52:21:3E:26:0C:1B:01*"}
+Rollershutter V_DG_M_S	"Velux DG Shutter Bathroom [%d]"{ velux="thing=actuator;channel=serial#01:52:00:21:00:07:00:02"}
+Rollershutter V_DG_W_S	"Velux DG Shutter West [%d]"	{ velux="thing=actuator;channel=serial#01:53:09:40:21:0C:2A:03" }
+Rollershutter V_DG_E_S	"Velux DG Shutter East [%d]"	{ velux="thing=actuator;channel=serial#11:56:32:14:5A:21:1C:04" }
+Rollershutter V_OG_W_S	"Velux OG Somfy Shutter [%d]"	{ velux="thing=actuator;channel=serial#Bathroom" }
 
 ```
 
@@ -343,36 +282,24 @@ Rollershutter   V_O_S        "DG Ost  [%d]"                     { channel="velux
 sitemap velux label="Velux Environment"
 {
     Frame label="Velux Shutter and Window" {
-
-        Switch  item=V_M_W_OPEN
-        Switch  item=V_M_W_UNLOCKED
-        Switch  item=V_M_W_CLOSED
-        Slider  item=V_M_W
+        Switch  item=V_DG_W_S
+        Switch  item=V_DG_E_S
+        Switch  item=V_DG_M_S
+        Switch  item=V_DG_M_W
     }
-    
-    Frame label="Velux Bridge Status" {
-        Text    item=V_BRIDGE_STATUS
-        Text    item=V_BRIDGE_TIMESTAMP
-        Switch  item=V_BRIDGE_RELOAD
+    Frame label="Velux Bridge" {
+        Switch  item=V_RELOAD
+        Text    item=V_STATUS
+        Text    item=V_TIMESTAMP
+        Text    item=V_CHECK
+        Text    item=V_FIRMWARE
+        Text    item=V_CONF_LAN_IP
+        Text    item=V_CONF_LAN_SUBNET
+        Text    item=V_CONF_LAN_GW
+        Switch  item=V_CONF_LAN_DHCP
+        Text    item=V_CONF_WLAN_SSID
+        Text    item=V_CONF_WLAN_PW
     }
-
-    Frame label="Velux Bridge Status" {
-        Switch  item=V_BRIDGE_DETECTION  
-        Text    item=V_BRIDGE_CHECK
-        Text    item=V_BRIDGE_SCENES
-        Text    item=V_BRIDGE_PRODUCTS
-    }
-
-    Frame label="Velux Bridge Configuration" {
-        Text    item=V_BRIDGE_FIRMWARE
-        Text    item=V_BRIDGE_IPADDRESS
-        Text    item=V_BRIDGE_SUBNETMASK
-        Text    item=V_BRIDGE_DEFAULTGW
-        Switch  item=V_BRIDGE_DHCP
-        Text    item=V_BRIDGE_WLANSSID
-        Text    item=V_BRIDGE_WLANPASSWD    
-    }
-    
 }
 ```
 
@@ -439,7 +366,6 @@ end
 For those who are interested in more detailed insight of the processing of this binding, a deeper look can be achieved by increased loglevel.
 
 With Karaf you can use the following command sequence:
-
 ```
 log:set TRACE org.openhab.binding.velux
 log:tail
@@ -463,49 +389,27 @@ On the other hand, if you prefer a textual configuration, you can append the log
 During startup of normal operations, there should be only some few messages within the logfile, like:
 
 ```
-[INFO ] [i.dashboard.internal.DashboardService] - Started Dashboard at http://192.168.45.150:8080
-[INFO ] [i.dashboard.internal.DashboardService] - Started Dashboard at https://192.168.45.150:8443
-[INFO ] [rthome.model.lsp.internal.ModelServer] - Started Language Server Protocol (LSP) service on port 5007
-[INFO ] [e.core.internal.i18n.I18nProviderImpl] - Location set to '49.035932145739444,8.455450258310762'.
-[INFO ] [smarthome.event.ExtensionEvent       ] - Extension 'package-expert' has been installed.
-[INFO ] [marthome.ui.paper.internal.PaperUIApp] - Started Paper UI at /paperui
-[INFO ] [.ui.habmin.internal.servlet.HABminApp] - Started HABmin servlet at /habmin
-[INFO ] [ding.velux.handler.VeluxBridgeHandler] - Initializing Velux veluxBridge handler for 'velux:klf200:7dff2548'.
-[INFO ] [ome.event.ThingStatusInfoChangedEvent] - 'velux:klf200:7dff2548' changed from UNINITIALIZED to INITIALIZING
-[INFO ] [ome.event.ThingStatusInfoChangedEvent] - 'velux:klf200:7dff2548' changed from INITIALIZING to UNKNOWN
-[INFO ] [nal.VeluxValidatedBridgeConfiguration] - veluxConfig[bridgeProtocol=slip,bridgeIPAddress=192.168.45.9,bridgeTCPPort=51200,bridgePassword=********,timeoutMsecs=1000,retries=5,refreshMsecs=15000,isBulkRetrievalEnabled=true]
-[INFO ] [ng.velux.bridge.slip.io.SSLconnection] - Starting velux bridge connection.
-[INFO ] [hab.binding.velux.bridge.slip.SClogin] - velux bridge connection successfully established (login succeeded).
-[INFO ] [ding.velux.handler.VeluxBridgeHandler] - Found velux scenes:
-        Scene "V_Shutter_West_100" (index 5) with non-silent mode and 0 actions
-        Scene "V_Shutter_West_000" (index 4) with non-silent mode and 0 actions
-        Scene "V_Shutter_Ost_090" (index 10) with non-silent mode and 0 actions
-        Scene "V_Window_Mitte_005" (index 3) with non-silent mode and 0 actions
-        Scene "V_Window_Mitte_000" (index 1) with non-silent mode and 0 actions
-        Scene "V_Window_Mitte_100" (index 2) with non-silent mode and 0 actions
-        Scene "V_Shutter_West_090" (index 7) with non-silent mode and 0 actions
-        Scene "V_Window_Mitte_010" (index 0) with non-silent mode and 0 actions
-        Scene "V_Shutter_Ost_000" (index 8) with non-silent mode and 0 actions
-        Scene "V_Shutter_Ost_100" (index 9) with non-silent mode and 0 actions       .
-[INFO ] [ding.velux.handler.VeluxBridgeHandler] - Found velux actuators:
-        Product "M_Rollershutter" / ROLLER_SHUTTER (bridgeIndex=4,serial=43:12:14:5A:12:1C:05:5F,position=0010)
-        Product "O_Rollershutter" / ROLLER_SHUTTER (bridgeIndex=3,serial=43:12:40:5A:0C:23:0A:6E,position=0000)
-        Product "M_Window" / WINDOW_OPENER (bridgeIndex=0,serial=43:12:3E:26:0C:1B:00:10,position=C800)
-        Product "W-Rollershutter" / ROLLER_SHUTTER (bridgeIndex=1,serial=43:12:40:5A:0C:2A:05:64,position=0000)      .
-[INFO ] [ding.velux.handler.VeluxBridgeHandler] - velux Bridge is online with 10 scenes and 4 actuators, now.
-[INFO ] [ome.event.ThingStatusInfoChangedEvent] - 'velux:klf200:7dff2548' changed from UNKNOWN to ONLINE
-[INFO ] [thome.event.ItemChannelLinkAddedEvent] - Link 'velux_klf200_7dff2548_status-velux:klf200:7dff2548:status' has been added.
-[INFO ] [smarthome.event.ItemStateChangedEvent] - velux_klf200_7dff2548_status changed from NULL to GW_S_GWM/GW_SS_IDLE
-[INFO ] [thome.event.ItemChannelLinkAddedEvent] - Link 'velux_klf200_7dff2548_timestamp-velux:klf200:7dff2548:timestamp' has been added.
-[WARN ] [ding.velux.handler.VeluxBridgeHandler] - Exception occurred during activated refresh scheduler: null
-[INFO ] [smarthome.event.ItemStateChangedEvent] - velux_klf200_7dff2548_timestamp changed from NULL to 1565646559977
-[INFO ] [thome.event.ItemChannelLinkAddedEvent] - Link 'velux_klf200_7dff2548_products-velux:klf200:7dff2548:products' has been added.
-[INFO ] [smarthome.event.ItemStateChangedEvent] - velux_klf200_7dff2548_products changed from NULL to 4_members:_Product_"M_Rollershutter"_/_ROLLER_SHUTTER_(bridgeIndex=4,serial=56:32:14:5A:12:1C:05:5F,position=0010),Product_"O_Rollershutter"_/_ROLLER_SHUTTER_(bridgeIndex=3,serial=53:09:40:5A:0C:23:0A:6E,position=0000),Product_"M_Window"_/_WINDOW_OPENER_(bridgeIndex=0,serial=56:23:3E:26:0C:1B:00:10,position=C800),Product_"W-Rollershutter"_/_ROLLER_SHUTTER_(bridgeIndex=1,serial=53:09:40:5A:0C:2A:05:64,position=0000)
-[INFO ] [thome.event.ItemChannelLinkAddedEvent] - Link 'velux_klf200_7dff2548_scenes-velux:klf200:7dff2548:scenes' has been added.
-[INFO ] [smarthome.event.ItemStateChangedEvent] - velux_klf200_7dff2548_scenes changed from NULL to 10_members:_Scene_"V_Shutter_West_100"_(index_5)_with_non-silent_mode_and_0_actions,Scene_"V_Shutter_West_000"_(index_4)_with_non-silent_mode_and_0_actions,Scene_"V_Shutter_Ost_090"_(index_10)_with_non-silent_mode_and_0_actions,Scene_"V_Window_Mitte_005"_(index_3)_with_non-silent_mode_and_0_actions,Scene_"V_Window_Mitte_000"_(index_1)_with_non-silent_mode_and_0_actions,Scene_"V_Window_Mitte_100"_(index_2)_with_non-silent_mode_and_0_actions,Scene_"V_Shutter_West_090"_(index_7)_with_non-silent_mode_and_0_actions,Scene_"V_Window_Mitte_010"_(index_0)_with_non-silent_mode_and_0_actions,Scene_"V_Shutter_Ost_000"_(index_8)_with_non-silent_mode_and_0_actions,Scene_"V_Shutter_Ost_100"_(index_9)_with_non-silent_mode_and_0_actions
-[INFO ] [smarthome.event.ItemStateChangedEvent] - velux_klf200_7dff2548_timestamp changed from 1565646559977 to 1565646593645
-[INFO ] [ig.discovery.internal.PersistentInbox] - Added new thing 'velux:scene:7dff2548:V_Shutter_West_100' to inbox.
+[INFO ] [.velux.internal.VeluxActivator] - velux binding has been started.
+[INFO ] [.b.velux.internal.VeluxBinding] - Active items are: [V_DG_M_W, ..., V_DG_M_S].
+[INFO ] [.b.velux.internal.VeluxBinding] - velux refresh interval set to 15000 milliseconds.
+[INFO ] [.service.AbstractActiveService] - velux Refresh Service has been started
+[INFO ] [.b.velux.internal.VeluxBinding] - veluxConfig[bridgeProtocol=slip,bridgeIPAddress=192.168.45.9,bridgeTCPPort=51200,bridgePassword=********,timeoutMsecs=500,retries=16,refreshMsecs=15000,isBulkRetrievalEnabled=true]
+[INFO ] [v.bridge.slip.io.SSLconnection] - Starting velux bridge connection.
+[INFO ] [.o.b.velux.bridge.slip.SClogin] - velux bridge connection successfully established (login succeeded).
+[INFO ] [.o.b.v.h.VeluxBridgeHandlerOH1] - Found velux scenes:
+	Scene "V_DG_Shutter_West_100" (index 5) with non-silent mode and 0 actions
+	Scene "V_DG_Shutter_West_000" (index 4) with non-silent mode and 0 actions
+	Scene "V_DG_Shutter_East_090" (index 10) with non-silent mode and 0 actions
 ...
+	Scene "V_DG_Shutter_East_000" (index 8) with non-silent mode and 0 actions
+	Scene "V_DG_Shutter_East_100" (index 9) with non-silent mode and 0 actions	.
+[INFO ] [.o.b.v.h.VeluxBridgeHandlerOH1] - Found velux actuators:
+        Product "Shutter Room 1" / ROLLER_SHUTTER (bridgeIndex=1,serial=01:53:09:40:21:0C:2A:01,position=0010)
+        Product "Shutter Bathroom" / ROLLER_SHUTTER (bridgeIndex=2,serial=01:52:00:21:00:07:00:02,position=8C95)
+        Product "Shutter Office" / ROLLER_SHUTTER (bridgeIndex=3,serial=01:53:09:40:21:43:2A:03,position=0000)
+        Product "Shutter Room 2" / ROLLER_SHUTTER (bridgeIndex=4,serial=11:56:32:14:5A:21:1C:04,position=08DF)
+        Product "Bathroom" / WINDOW_OPENER (bridgeIndex=0,serial=01:52:21:3E:26:0C:1B:05,position=C800) .
+[INFO ] [.o.b.v.h.VeluxBridgeHandlerOH1] - velux Bridge is online, now.
 ```
 
 ## Supported/Tested Firmware Revisions
@@ -520,9 +424,13 @@ The Velux Bridge in API version one (firmware version 0.1.1.*) allows activating
 | 2.0.0.71	    | 2018-09-27   | Public SLIP-API w/ private-only WLAN-based Web Frontend w/ JSON-API.    |
 
 Notes:
-
 - Velux bridges cannot be returned to version one of the firmware after being upgraded to version two.
 - Firmware updates are currently provided at [Velux download area](https://updates2.velux.com/).
+
+
+## How to run it under openHAB2?
+
+Use the [Karaf console](https://www.openhab.org/docs/administration/console.html) to install the openHAB1 compatibility layer with help of the command `feature:install openhab-runtime-compat1x`. Activate the binding by placing the jar-file into the [extension directory](https://www.openhab.org/docs/configuration/addons.html#through-manually-provided-add-ons). Then, create the basic configuration of the service i.e. with a file `services/velux.cfg`, define the items within i.e. `items/velux.items` and finally generate a UI within i.e. `sitemap/default.sitemap`.
 
 
 ## Is it possible to run the both communication methods in parallel?
