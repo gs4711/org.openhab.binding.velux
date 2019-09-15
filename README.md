@@ -35,18 +35,19 @@ Items marked with (\*) are fully implemented. Items marked with (+) have only pa
 
 The <B>Velux KLF200</B> bridge has to be configured with some parameters, at least with the IP address of the bridge.
 
-| Property       | Default                | Required | Description                                               |
-|----------------|------------------------|:--------:|-----------------------------------------------------------|
-| bridgeIPAddress|                        |   Yes    | Hostname or address for accessing the Velux Bridge.       |
-| bridgeProtocol | slip                   |    No    | Underlying communication protocol (http/https/slip).      |
-| bridgeTCPPort  | 51200                  |    No    | TCP port (80 or 51200) for accessing the Velux Bridge.    |
-| bridgePassword | velux123               |    No    | Password for authentication against the Velux Bridge.(**) |
-| timeoutMsecs   | 1000                   |    No    | Initial Connection timeout in milliseconds                |
-| retries        | 5                      |    No    | Number of retries during I/O                              |
-| refreshMsecs   | 60000                  |    No    | Refresh interval in milliseconds.                         |
-| bulkRetrieval  | yes                    |    No    | Load all scenes and actuators in one step.                |
+| Property             | Default          | Required | Description                                                  |
+|----------------------|------------------|:--------:|--------------------------------------------------------------|
+| ipAddress            |                  |   Yes    | Hostname or address for accessing the Velux Bridge.          |
+| protocol             | slip             |    No    | Underlying communication protocol (http/https/slip).         |
+| tcpPort              | 51200            |    No    | TCP port (80 or 51200) for accessing the Velux Bridge.       |
+| password             | velux123         |    No    | Password for authentication against the Velux Bridge.(\*\*)    |
+| timeoutMsecs         | 1000             |    No    | Initial Connection timeout in milliseconds.                  |
+| retries              | 5                |    No    | Number of retries during I/O.                                |
+| refreshMsecs         | 10000            |    No    | Refresh interval in milliseconds.                            |
+| bulkRetrieval        | yes              |    No    | Load all scenes and actuators in one step.                   |
+| isSequentialEnforced | no               |    No    | Enforce Sequential Actuator Control even for long operations.|
 
-(**) Note: This password is the API password that is printed on the back of the unit. Normally it differs from the password of the web frontend.
+(\*\*) Note: This password is the API password that is printed on the back of the unit. Normally it differs from the password of the web frontend.
 
 Advise: if you see a significant number of messages per day like
 
@@ -59,7 +60,7 @@ please increase the parameters retries or/and timeoutMsecs.
 For your convenience you'll see a log entry for the recognized configuration within the log file i.e.
 
 ```
-2018-07-23 20:40:24.746 [INFO ] [.b.velux.internal.VeluxBinding] - veluxConfig[bridgeIPAddress=192.168.42.1,bridgeTCPPort=80,bridgePassword=********,timeoutMsecs=2000,retries=10]
+2018-07-23 20:40:24.746 [INFO ] [.b.velux.internal.VeluxBinding] - veluxConfig[ipAddress=192.168.42.1,tcpPort=80,password=********,timeoutMsecs=2000,retries=10]
 ```
 
 The <B>Velux</B> Things (beside the mentioned bridge) are <B>Velux Window</B>, <B>Velux Rollershutter</B>, and a generic <B>Velux Actuator</B> and <B>Velux Scene</B>. The 1st three Things have to be configured with an identification by their serial number. 
@@ -75,6 +76,13 @@ The fourth Thing, the <B>Velux Scene>, has to be configured with an identificati
 | Property       | Default                | Required | Description                                               |
 |----------------|------------------------|:--------:|-----------------------------------------------------------|
 | sceneName      |                        |   Yes    | Name of the io-homecontrol configuration.                 |
+
+The fifth Thing, the <B>Velux Virtual Shutter>, has to be configured with pairs of level combined with the appropriate scenenames. 
+
+| Property       | Default                | Required | Description                                               |
+|----------------|------------------------|:--------:|-----------------------------------------------------------|
+| sceneLevels    |                        |   Yes    | <Level1>,<Scene1>,<Level2>,<Scene2>,....                  |
+| currentLevel   | 0                      |    No    | Inverts any device values.                                |
 
 
 ## Discovery
@@ -96,13 +104,14 @@ Optionally the subtype is enhanced with parameters like the appropriate name of 
 { velux="thing=<Mastertype>;channel=<Subtype>#<Parameter>" }
 ```
 
-| Mastertype | Description                                                               |
-|------------|---------------------------------------------------------------------------|
-| bridge     | The Velux KLF200 represents a gateway to all Velux devices.               |
-| scene      | Named ordered set of product states which can be activated for execution. |
-| actuator   | Generic IO-home controlled device which can be maintained by parameter settings.  |
-| window     | IO-home controlled device of type window.				 |
-| rollershutter   | IO-home controlled device of type rollershutter.                     |
+| Mastertype    | Description                                                                      |
+|---------------|----------------------------------------------------------------------------------|
+| bridge        | The Velux KLF200 represents a gateway to all Velux devices.                      |
+| scene         | Named ordered set of product states which can be activated for execution.        |
+| actuator      | Generic IO-home controlled device which can be maintained by parameter settings. |
+| window        | IO-home controlled device of type window.				           |
+| rollershutter | IO-home controlled device of type rollershutter.                                 |
+| vshutter      | IO-home controlled device of type rollershutter.                                 |
 
 
 ### Subtype
@@ -141,7 +150,7 @@ see below at item `Velux DG Window Bathroom`.
 
 ### Subtype Parameters
 
-In case of the scene-related subtypes, action and silentMode, the spezification of the related scene as parameters is necessary;
+In case of the scene-related subtypes, action and silentMode, the specification of the related scene as parameters is necessary;
 
 ```
 { velux="thing=scene;channel=<Subtype>#<Parameter>" }
@@ -273,7 +282,7 @@ rule "PushButton of group gV"
 // Definition of Velux bridge velux:klf200:home
 //
 
-Bridge velux:klf200:home    [ bridgeIPAddress="192.168.1.1", bridgeTCPPort=51200 ] {
+Bridge velux:klf200:home    [ ipAddress="192.168.1.1", bridgeTCPPort=51200 ] {
 
 // Velux scenes
 
