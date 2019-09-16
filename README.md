@@ -71,7 +71,7 @@ The <B>Velux</B> Things (beside the mentioned bridge) are <B>Velux Window</B>, <
 | name           |                        |    No    | (Optional) name of the io-homecontrol device.             |
 | inverted       | false                  |    No    | Inverts any device values.                                |
 
-The fourth Thing, the <B>Velux Scene>, has to be configured with an identification by their scenename. 
+The fourth Thing, the <B>Velux Scene</B>, has to be configured with an identification by their scenename. 
 
 | Property       | Default                | Required | Description                                               |
 |----------------|------------------------|:--------:|-----------------------------------------------------------|
