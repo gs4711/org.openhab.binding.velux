@@ -77,7 +77,7 @@ The fourth Thing, the <B>Velux Scene</B>, has to be configured with an identific
 |----------------|------------------------|:--------:|-----------------------------------------------------------|
 | sceneName      |                        |   Yes    | Name of the io-homecontrol configuration.                 |
 
-The fifth Thing, the <B>Velux Virtual Shutter>, has to be configured with pairs of level combined with the appropriate scenenames. 
+The fifth Thing, the <B>Velux Virtual Shutter</B>, has to be configured with pairs of level combined with the appropriate scenenames. 
 
 | Property       | Default                | Required | Description                                               |
 |----------------|------------------------|:--------:|-----------------------------------------------------------|
