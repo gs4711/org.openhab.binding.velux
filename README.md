@@ -44,8 +44,9 @@ The <B>Velux KLF200</B> bridge has to be configured with some parameters, at lea
 | timeoutMsecs         | 1000             |    No    | Initial Connection timeout in milliseconds.                  |
 | retries              | 5                |    No    | Number of retries during I/O.                                |
 | refreshMsecs         | 10000            |    No    | Refresh interval in milliseconds.                            |
-| bulkRetrieval        | yes              |    No    | Load all scenes and actuators in one step.                   |
+| isBulkRetrievalEnabled | yes            |    No    | Load all scenes and actuators in one step.                   |
 | isSequentialEnforced | no               |    No    | Enforce Sequential Actuator Control even for long operations.|
+| isProtocolTraceEnabled | no             |    No    | Show any protocol interaction (loglevel INFO).               |
 
 (\*\*) Note: This password is the API password that is printed on the back of the unit. Normally it differs from the password of the web frontend.
 
@@ -137,6 +138,7 @@ Optionally the subtype is enhanced with parameters like the appropriate name of 
 | check        | String        | Result of the check of current item configuration               | bridge     | N/A       |
 | shutter      | Rollershutter | Virtual rollershutter as combination of different scenes        | bridge     | required  |
 | position     | Rollershutter | Position of the IO-Homecontrol'ed device (\*\*\*\*) (\*\*\*\*\*)| actuator   | required  |
+| state        | Switch        | Position of the IO-Homecontrol'ed device (\*\*\*\*) (\*\*\*\*\*)| actuator   | required  |
 | serial       | Rollershutter | IO-Homecontrol'ed device (\*\*\*\*) (\*\*\*\*\*)		 | actuator   | required  |
 
 Notes:
@@ -282,7 +284,7 @@ rule "PushButton of group gV"
 // Definition of Velux bridge velux:klf200:home
 //
 
-Bridge velux:klf200:home    [ ipAddress="192.168.1.1", bridgeTCPPort=51200 ] {
+Bridge velux:klf200:home    [ ipAddress="192.168.1.1", tcpPort=51200, password="secret" ] {
 
 // Velux scenes
 
@@ -482,7 +484,7 @@ During startup of normal operations, there should be only some few messages with
 [INFO ] [ding.velux.handler.VeluxBridgeHandler] - Initializing Velux veluxBridge handler for 'velux:klf200:7dff2548'.
 [INFO ] [ome.event.ThingStatusInfoChangedEvent] - 'velux:klf200:7dff2548' changed from UNINITIALIZED to INITIALIZING
 [INFO ] [ome.event.ThingStatusInfoChangedEvent] - 'velux:klf200:7dff2548' changed from INITIALIZING to UNKNOWN
-[INFO ] [nal.VeluxValidatedBridgeConfiguration] - veluxConfig[bridgeProtocol=slip,bridgeIPAddress=192.168.45.9,bridgeTCPPort=51200,bridgePassword=********,timeoutMsecs=1000,retries=5,refreshMsecs=15000,isBulkRetrievalEnabled=true]
+[INFO ] [nal.VeluxValidatedBridgeConfiguration] - veluxConfig[protocol=slip,ipAddress=192.168.45.9,tcpPort=51200,password=********,timeoutMsecs=1000,retries=5,refreshMsecs=15000,isBulkRetrievalEnabled=true]
 [INFO ] [ng.velux.bridge.slip.io.SSLconnection] - Starting velux bridge connection.
 [INFO ] [hab.binding.velux.bridge.slip.SClogin] - velux bridge connection successfully established (login succeeded).
 [INFO ] [ding.velux.handler.VeluxBridgeHandler] - Found velux scenes:
