@@ -107,6 +107,7 @@ Optionally the subtype is enhanced with parameters like the appropriate name of 
 
 | Mastertype    | Description                                                                      |
 |---------------|----------------------------------------------------------------------------------|
+| binding       | Provides informations for easier configuration of this binding.                  |
 | bridge        | The Velux KLF200 represents a gateway to all Velux devices.                      |
 | scene         | Named ordered set of product states which can be activated for execution.        |
 | actuator      | Generic IO-home controlled device which can be maintained by parameter settings. |
@@ -120,8 +121,7 @@ Optionally the subtype is enhanced with parameters like the appropriate name of 
 
 | Subtype      | Item Type     | Description                                                     | Mastertype | Parameter |
 |--------------|---------------|-----------------------------------------------------------------|------------|-----------|
-| action       | Switch        | Activates a set of predefined product settings                  | scene      | required  |
-| silentMode   | Switch        | Modification of the silent mode of the defined product settings | scene      | required  |
+| information  | String        | Describes the current state of the binding                      | binding    | N/A       |
 | status       | String        | Current Bridge State (\*\*\*)                                      | bridge     | N/A       |
 | reload       | Switch        | Reload information from bridge into binding                     | bridge     | N/A       |
 | timestamp    | Number        | Timestamp of last successful device interaction                 | bridge     | N/A       |
@@ -140,6 +140,9 @@ Optionally the subtype is enhanced with parameters like the appropriate name of 
 | position     | Rollershutter | Position of the IO-Homecontrol'ed device (\*\*\*\*) (\*\*\*\*\*)| actuator   | required  |
 | state        | Switch        | Position of the IO-Homecontrol'ed device (\*\*\*\*) (\*\*\*\*\*)| actuator   | required  |
 | serial       | Rollershutter | IO-Homecontrol'ed device (\*\*\*\*) (\*\*\*\*\*)		 | actuator   | required  |
+| silentMode   | Switch        | NOT YET IMPLEMENTED.                                            | actuator   | required  |
+| action       | Switch        | Activates a set of predefined product settings                  | scene      | required  |
+| silentMode   | Switch        | Modification of the silent mode of the defined product settings | scene      | required  |
 
 Notes:
 (\*\*\*) The existence of this item triggers the continuous realtime status updates of any Velux item like shutters even if they are manually controlled by other controllers.
@@ -297,7 +300,7 @@ Bridge velux:klf200:home    [ ipAddress="192.168.1.1", tcpPort=51200, password="
     Thing   actuator    V_M_W       [ serial="43:12:3E:26:0C:1B:00:10" ]
     Thing   actuator    V_M_S       [ serial="43:12:14:5A:12:1C:05:5F" ]
     Thing   actuator    V_W_S       [ serial="43:12:40:5A:0C:2A:05:64" ]
-    Thing   actuator    V_O_S       [ serial="43:12:40:5A:0C:23:0A:6E" ]
+    Thing   actuator    V_O_S       [ serial="43:12:40:5A:0C:23:0A:6E",inverted=true ]
 
 }
 
